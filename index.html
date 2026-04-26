@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Price Scanner — نظام قراءة الأسعار الذكي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&family=Tajawal:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #09090f;
+  --bg2:       #0d0d18;
+  --bg3:       #12121f;
+  --surface:   #16162a;
+  --surface2:  #1e1e38;
+  --border:    rgba(255,255,255,0.06);
+  --gold:      #e8a84c;
+  --gold2:     #f5c87a;
+  --gold-dim:  rgba(232,168,76,0.12);
+  --cyan:      #4ecdc4;
+  --cyan-dim:  rgba(78,205,196,0.10);
+  --text:      #f0eff8;
+  --text2:     #a09ec0;
+  --text3:     #5a587a;
+  --radius:    16px;
+  --radius-sm: 10px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Cairo', 'Tajawal', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  line-height: 1.7;
+}
+
+/* ── Noise Overlay ── */
+body::before {
+  content:'';
+  position: fixed; inset:0; z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; inset-inline: 0; z-index: 100;
+  padding: 18px 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(9,9,15,0.82);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 12px;
+  font-weight: 900; font-size: 1.25rem; color: var(--text);
+  text-decoration: none;
+}
+.nav-logo .icon {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  border-radius: 10px;
+  display: grid; place-items: center;
+  font-size: 1.1rem;
+}
+.nav-links {
+  display: flex; align-items: center; gap: 32px;
+  list-style: none;
+}
+.nav-links a {
+  color: var(--text2); text-decoration: none;
+  font-size: 0.9rem; font-weight: 500;
+  transition: color .2s;
+}
+.nav-links a:hover { color: var(--gold); }
+.nav-cta {
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  color: #09090f !important; font-weight: 700 !important;
+  padding: 9px 22px; border-radius: 8px;
+  transition: opacity .2s !important;
+}
+.nav-cta:hover { opacity: .85; }
+
+/* ── SECTIONS ── */
+section { position: relative; z-index: 1; }
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+/* ══ HERO ══ */
+#hero {
+  min-height: 100vh;
+  display: flex; align-items: center;
+  padding-top: 100px;
+  overflow: hidden;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--gold-dim);
+  border: 1px solid rgba(232,168,76,0.25);
+  border-radius: 100px;
+  padding: 7px 16px;
+  font-size: 0.82rem; font-weight: 600;
+  color: var(--gold2);
+  margin-bottom: 28px;
+  animation: fadeUp .6s ease both;
+}
+
+.hero-badge::before {
+  content:'';
+  width: 7px; height: 7px;
+  background: var(--gold);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,100%{opacity:1;transform:scale(1)}
+  50%{opacity:.4;transform:scale(1.5)}
+}
+
+h1 {
+  font-size: clamp(2.4rem, 4vw, 3.6rem);
+  font-weight: 900;
+  line-height: 1.2;
+  margin-bottom: 24px;
+  animation: fadeUp .7s .1s ease both;
+}
+
+h1 .accent { color: var(--gold); }
+h1 .accent2 { color: var(--cyan); }
+
+.hero-desc {
+  font-size: 1.1rem;
+  color: var(--text2);
+  max-width: 480px;
+  margin-bottom: 40px;
+  font-weight: 400;
+  animation: fadeUp .7s .2s ease both;
+}
+
+.hero-actions {
+  display: flex; gap: 14px; flex-wrap: wrap;
+  animation: fadeUp .7s .3s ease both;
+}
+
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  color: #09090f; font-weight: 700; font-size: 1rem;
+  padding: 14px 30px; border-radius: 10px;
+  text-decoration: none; border: none; cursor: pointer;
+  transition: transform .2s, box-shadow .2s;
+  box-shadow: 0 8px 32px rgba(232,168,76,0.3);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(232,168,76,0.4); }
+
+.btn-secondary {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--surface); color: var(--text);
+  font-weight: 600; font-size: 1rem;
+  padding: 14px 30px; border-radius: 10px;
+  text-decoration: none; border: 1px solid var(--border);
+  transition: background .2s, border-color .2s;
+}
+.btn-secondary:hover { background: var(--surface2); border-color: rgba(255,255,255,.15); }
+
+.hero-stats {
+  display: flex; gap: 32px; margin-top: 52px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+  animation: fadeUp .7s .4s ease both;
+}
+.stat-item { text-align: center; }
+.stat-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.8rem; font-weight: 700;
+  color: var(--gold);
+}
+.stat-label { font-size: 0.8rem; color: var(--text3); font-weight: 500; }
+
+/* ── Hero Visual ── */
+.hero-visual {
+  position: relative;
+  animation: fadeUp .9s .2s ease both;
+}
+
+.scanner-mockup {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 40px 100px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.04);
+}
+.scanner-mockup::before {
+  content:'';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 30% 0%, rgba(232,168,76,.08), transparent 60%);
+}
+
+.mockup-topbar {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 20px;
+}
+.dot { width:10px;height:10px;border-radius:50%; }
+.dot.red{background:#ff5f56} .dot.yellow{background:#ffbd2e} .dot.green{background:#27c93f}
+
+.mockup-title {
+  flex: 1; text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem; color: var(--text3);
+}
+
+.search-bar {
+  background: var(--bg2);
+  border: 2px solid var(--gold);
+  border-radius: 10px;
+  padding: 14px 18px;
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 24px;
+  box-shadow: 0 0 20px rgba(232,168,76,0.15);
+}
+.search-bar .barcode-icon { font-size: 1.4rem; }
+.search-bar input {
+  background: none; border: none; outline: none;
+  color: var(--text); font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem; width: 100%;
+  caret-color: var(--gold);
+}
+
+.scan-line {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  border-radius: 2px;
+  animation: scanAnim 2s ease-in-out infinite;
+  margin-bottom: 20px;
+}
+@keyframes scanAnim {
+  0%,100%{opacity:0;transform:scaleX(0.3)}
+  50%{opacity:1;transform:scaleX(1)}
+}
+
+.result-card {
+  background: var(--bg3);
+  border: 1px solid rgba(232,168,76,0.2);
+  border-radius: 12px;
+  padding: 18px;
+}
+.result-name { font-weight: 700; font-size: 1rem; color: var(--text); margin-bottom: 10px; }
+.result-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.result-label { font-size: 0.78rem; color: var(--text3); }
+.result-value { font-family: 'JetBrains Mono', monospace; font-size: 0.88rem; color: var(--cyan); }
+.result-price { font-size: 1.4rem; font-weight: 900; color: var(--gold); }
+
+.expiry-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(78,205,196,0.12); color: var(--cyan);
+  border: 1px solid rgba(78,205,196,0.25);
+  border-radius: 6px; padding: 3px 10px; font-size: 0.76rem; font-weight: 600;
+}
+
+.floating-tag {
+  position: absolute;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+  animation: float 4s ease-in-out infinite;
+}
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+.tag-db { top: -18px; left: -20px; color: var(--cyan); animation-delay: 0s; }
+.tag-excel { bottom: 30px; left: -30px; color: var(--gold); animation-delay: 1.5s; }
+.tag-live { top: 50px; right: -25px; color: #a78bfa; animation-delay: 0.8s; }
+
+/* ── SECTION TITLES ── */
+.section-header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+.section-tag {
+  display: inline-block;
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gold);
+  margin-bottom: 14px;
+}
+.section-tag::before, .section-tag::after {
+  content: '──';
+  margin: 0 10px;
+  opacity: .4;
+}
+.section-title {
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  font-weight: 900; line-height: 1.2;
+  margin-bottom: 16px;
+}
+.section-desc {
+  color: var(--text2); max-width: 580px; margin: 0 auto;
+  font-size: 1rem;
+}
+
+/* ── DIVIDER ── */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  margin: 0 auto;
+}
+
+/* ══ DATA SOURCES ══ */
+#data-sources { padding: 110px 0; }
+
+.sources-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+}
+
+.source-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color .3s, transform .3s;
+}
+.source-card::before {
+  content:'';
+  position:absolute; inset:0;
+  background: var(--gold-dim);
+  opacity: 0;
+  transition: opacity .3s;
+}
+.source-card:hover { border-color: rgba(232,168,76,0.35); transform: translateY(-4px); }
+.source-card:hover::before { opacity: 1; }
+
+.source-card.featured {
+  grid-column: span 2;
+  background: linear-gradient(135deg, var(--surface) 60%, rgba(232,168,76,0.06));
+  border-color: rgba(232,168,76,0.2);
+}
+
+.source-icon {
+  width: 52px; height: 52px;
+  border-radius: 12px;
+  display: grid; place-items: center;
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+.source-icon.green { background: rgba(39,201,63,0.12); }
+.source-icon.blue  { background: rgba(78,205,196,0.12); }
+.source-icon.gold  { background: var(--gold-dim); }
+.source-icon.purple{ background: rgba(167,139,250,0.12); }
+
+.source-title { font-size: 1.15rem; font-weight: 700; margin-bottom: 10px; }
+.source-desc  { font-size: 0.88rem; color: var(--text2); line-height: 1.7; margin-bottom: 18px; }
+
+.source-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag {
+  background: var(--bg2); color: var(--text3);
+  border: 1px solid var(--border);
+  border-radius: 6px; padding: 4px 10px;
+  font-size: 0.75rem; font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+}
+
+.db-list {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px; margin-top: 16px;
+}
+.db-item {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 12px;
+  font-size: 0.82rem; font-weight: 600; color: var(--text2);
+}
+.db-dot { width:6px;height:6px;border-radius:50%;background:var(--cyan); flex-shrink:0; }
+
+/* ══ FEATURES ══ */
+#features { padding: 110px 0; background: var(--bg2); }
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.feature-cell {
+  background: var(--surface);
+  padding: 36px 30px;
+  position: relative;
+  transition: background .25s;
+}
+.feature-cell:hover { background: var(--surface2); }
+.feature-cell.wide { grid-column: span 2; }
+
+.feature-icon {
+  font-size: 2rem; margin-bottom: 16px;
+  display: block;
+}
+.feature-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 10px; }
+.feature-desc { font-size: 0.86rem; color: var(--text2); line-height: 1.75; }
+
+.feature-list {
+  list-style: none; margin-top: 14px;
+}
+.feature-list li {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 0.84rem; color: var(--text2); margin-bottom: 7px;
+}
+.feature-list li::before {
+  content: '◈';
+  color: var(--gold); font-size: 0.7rem; margin-top: 4px; flex-shrink: 0;
+}
+
+/* ══ APPEARANCE ══ */
+#appearance { padding: 110px 0; }
+
+.appear-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.appear-content h2 {
+  font-size: 2.2rem; font-weight: 900;
+  margin-bottom: 20px; line-height: 1.2;
+}
+.appear-content p {
+  color: var(--text2); margin-bottom: 32px; font-size: 0.95rem;
+}
+
+.appear-options { display: flex; flex-direction: column; gap: 14px; }
+.appear-option {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  transition: border-color .25s, background .25s;
+  cursor: default;
+}
+.appear-option:hover { border-color: rgba(232,168,76,0.3); background: var(--surface2); }
+.appear-option-icon {
+  width: 40px; height: 40px; border-radius: 9px;
+  display: grid; place-items: center;
+  font-size: 1.1rem; flex-shrink: 0;
+}
+.appear-option-icon.gold { background: var(--gold-dim); }
+.appear-option-icon.blue { background: rgba(78,205,196,0.1); }
+.appear-option-icon.purple { background: rgba(167,139,250,0.1); }
+.appear-option-text .title { font-weight: 700; font-size: 0.92rem; margin-bottom: 3px; }
+.appear-option-text .sub { color: var(--text2); font-size: 0.8rem; }
+
+.appear-visual {
+  position: relative;
+}
+
+.screen-preview {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0,0,0,.5);
+}
+
+.screen-topbar {
+  background: var(--bg);
+  padding: 14px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.8rem; color: var(--text3);
+}
+.screen-topbar .company { color: var(--text); font-weight: 700; }
+
+.screen-body {
+  padding: 30px;
+  background: linear-gradient(135deg, #0f1a0f 0%, #0a1020 100%);
+  min-height: 200px;
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.screen-logo {
+  position: absolute; top: 16px; right: 16px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.8rem; font-weight: 700; color: rgba(255,255,255,0.6);
+}
+
+.screen-result-big {
+  text-align: center;
+}
+.screen-product { font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
+.screen-price-big {
+  font-size: 2.4rem; font-weight: 900;
+  color: var(--gold);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.screen-datetime {
+  position: absolute; bottom: 14px; left: 16px;
+  font-size: 0.75rem; color: rgba(255,255,255,.35);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.transition-pills {
+  display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap;
+}
+.pill {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 100px; padding: 5px 14px;
+  font-size: 0.78rem; color: var(--text2); cursor: default;
+  transition: background .2s, border-color .2s, color .2s;
+}
+.pill:hover, .pill.active { background: var(--gold-dim); border-color: var(--gold); color: var(--gold); }
+
+/* ══ EXPIRY ══ */
+#expiry { padding: 110px 0; background: var(--bg2); }
+
+.expiry-layout {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+}
+
+.expiry-table {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.expiry-table-header {
+  background: var(--bg);
+  padding: 14px 20px;
+  display: grid; grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 10px;
+  font-size: 0.78rem; font-weight: 700; color: var(--text3);
+  border-bottom: 1px solid var(--border);
+}
+.expiry-row {
+  padding: 13px 20px;
+  display: grid; grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 10px;
+  font-size: 0.82rem;
+  border-bottom: 1px solid var(--border);
+  transition: background .2s;
+  align-items: center;
+}
+.expiry-row:hover { background: var(--surface2); }
+.expiry-row:last-child { border-bottom: none; }
+.expiry-row.warn { background: rgba(232,168,76,.05); border-right: 3px solid var(--gold); }
+.expiry-row.expired { background: rgba(255,80,80,.05); border-right: 3px solid #ff5050; }
+.badge-warn { background: rgba(232,168,76,.15); color: var(--gold); border-radius:5px; padding:2px 8px; font-size:.72rem; font-weight:700; }
+.badge-exp  { background: rgba(255,80,80,.15); color: #ff6b6b; border-radius:5px; padding:2px 8px; font-size:.72rem; font-weight:700; }
+.badge-ok   { background: rgba(39,201,63,.12); color: #27c93f; border-radius:5px; padding:2px 8px; font-size:.72rem; font-weight:700; }
+
+.expiry-features { display: flex; flex-direction: column; gap: 20px; }
+.expiry-feature {
+  display: flex; gap: 16px;
+}
+.ef-icon {
+  width: 44px; height: 44px; border-radius: 10px;
+  display: grid; place-items: center;
+  font-size: 1.2rem; flex-shrink: 0;
+}
+.ef-icon.gold { background: var(--gold-dim); }
+.ef-icon.red  { background: rgba(255,80,80,.1); }
+.ef-icon.cyan { background: var(--cyan-dim); }
+.ef-title { font-weight: 700; font-size: 0.92rem; margin-bottom: 5px; }
+.ef-desc  { font-size: 0.83rem; color: var(--text2); line-height: 1.6; }
+
+/* ══ MULTILANG ══ */
+#multilang { padding: 110px 0; }
+
+.lang-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+.lang-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  text-align: center;
+  transition: border-color .25s, transform .25s;
+}
+.lang-card:hover { border-color: rgba(232,168,76,0.3); transform: translateY(-3px); }
+.lang-flag { font-size: 2.5rem; margin-bottom: 12px; }
+.lang-name { font-size: 1.2rem; font-weight: 700; margin-bottom: 6px; }
+.lang-code {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem; color: var(--gold);
+  background: var(--gold-dim); border-radius:5px; padding:2px 10px;
+  margin-bottom: 12px;
+}
+.lang-dir { font-size: 0.82rem; color: var(--text2); }
+
+.currency-grid {
+  display: flex; flex-wrap: wrap; gap: 12px;
+  justify-content: center;
+  margin-top: 48px;
+}
+.currency-item {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 20px;
+  transition: border-color .2s;
+}
+.currency-item:hover { border-color: rgba(232,168,76,0.3); }
+.currency-symbol {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.3rem; font-weight: 700; color: var(--gold);
+}
+.currency-name { font-size: 0.84rem; color: var(--text2); }
+
+/* ══ PARTNER SYSTEM ══ */
+#partner { padding: 110px 0; background: var(--bg2); }
+
+.partner-grid {
+  display: grid; grid-template-columns: 1fr 1.4fr; gap: 60px; align-items: start;
+}
+
+.partner-levels {
+  display: flex; flex-direction: column; gap: 14px;
+}
+.level-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 22px;
+  position: relative; overflow: hidden;
+  transition: border-color .25s;
+}
+.level-card::before {
+  content: '';
+  position: absolute; inset: 0 auto 0 0;
+  width: 3px;
+}
+.level-card.dev::before { background: #a78bfa; }
+.level-card.partner::before { background: var(--cyan); }
+.level-card.user::before { background: var(--gold); }
+.level-card:hover { border-color: rgba(255,255,255,.12); }
+.level-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 6px; }
+.level-desc  { font-size: 0.82rem; color: var(--text2); line-height: 1.6; }
+.level-badge {
+  position: absolute; top: 14px; left: 16px;
+  font-size: 0.7rem; font-weight: 700;
+  padding: 2px 9px; border-radius: 100px;
+}
+.level-badge.dev    { background: rgba(167,139,250,.12); color: #a78bfa; }
+.level-badge.partner{ background: var(--cyan-dim); color: var(--cyan); }
+.level-badge.user   { background: var(--gold-dim); color: var(--gold2); }
+
+.partner-features-right { display: flex; flex-direction: column; gap: 16px; }
+.pf-item {
+  display: flex; gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 18px;
+  transition: border-color .25s;
+}
+.pf-item:hover { border-color: rgba(232,168,76,.2); }
+.pf-item-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 2px; }
+.pf-item-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 5px; }
+.pf-item-desc  { font-size: 0.82rem; color: var(--text2); line-height: 1.6; }
+
+/* ══ PRICING ══ */
+#pricing { padding: 110px 0; }
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(5,1fr);
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.price-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 20px;
+  text-align: center;
+  transition: transform .25s, border-color .25s;
+  position: relative;
+}
+.price-card:hover { transform: translateY(-5px); border-color: rgba(232,168,76,.25); }
+.price-card.featured {
+  border-color: var(--gold);
+  background: linear-gradient(160deg, var(--surface) 60%, rgba(232,168,76,.08));
+  box-shadow: 0 0 40px rgba(232,168,76,.12);
+}
+.featured-label {
+  position: absolute; top: -12px; inset-inline: 0;
+  display: flex; justify-content: center;
+}
+.featured-label span {
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  color: #09090f; font-weight: 700; font-size: 0.72rem;
+  padding: 4px 14px; border-radius: 100px;
+}
+.plan-name { font-weight: 900; font-size: 1rem; margin-bottom: 6px; }
+.plan-scans {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.5rem; font-weight: 700; color: var(--gold);
+  margin-bottom: 4px;
+}
+.plan-scans-unit { font-size: 0.75rem; color: var(--text3); margin-bottom: 18px; }
+.plan-price {
+  font-size: 1.35rem; font-weight: 900; color: var(--text);
+  margin-bottom: 4px;
+}
+.plan-currency { font-size: 0.78rem; color: var(--text2); }
+
+.free-plans {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 14px;
+  margin-top: 32px;
+}
+.free-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 20px;
+  text-align: center;
+}
+.free-card .plan-name { font-size: .9rem; color: var(--text2); }
+.free-card .plan-scans { font-size: 1.2rem; color: var(--text3); }
+
+/* ══ CTA ══ */
+#cta {
+  padding: 110px 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+#cta::before {
+  content:'';
+  position:absolute; inset:0;
+  background: radial-gradient(ellipse at 50% 50%, rgba(232,168,76,.08), transparent 65%);
+}
+.cta-inner { position: relative; z-index:1; }
+.cta-title { font-size: clamp(2rem,3.5vw,3rem); font-weight:900; margin-bottom:16px; }
+.cta-desc { color: var(--text2); font-size:1rem; max-width:480px; margin:0 auto 40px; }
+
+.contact-methods { display:flex; gap:20px; justify-content:center; flex-wrap:wrap; margin-top:40px; }
+.contact-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 32px;
+  text-align: center;
+  min-width: 180px;
+  transition: border-color .25s;
+}
+.contact-card:hover { border-color: rgba(232,168,76,.3); }
+.contact-icon { font-size:1.8rem; margin-bottom:10px; }
+.contact-label { font-size:.82rem; color:var(--text2); margin-bottom:4px; }
+.contact-value { font-weight:700; font-size:.9rem; color: var(--text); }
+
+/* ── FOOTER ── */
+footer {
+  padding: 32px 0;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-size: .82rem; color: var(--text3);
+}
+footer span { color: var(--gold); }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity:0; transform: translateY(28px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+.reveal {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity .65s ease, transform .65s ease;
+}
+.reveal.visible { opacity:1; transform:translateY(0); }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--surface2); border-radius:3px; }
+
+/* ── GLOW LINES ── */
+.glow-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--gold) 50%, transparent 100%);
+  opacity: .3;
+  margin: 0;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  nav { padding: 14px 20px; }
+  .nav-links { display: none; }
+  .hero-grid, .appear-grid, .expiry-layout, .partner-grid { grid-template-columns: 1fr; }
+  .sources-grid, .features-grid { grid-template-columns: 1fr; }
+  .source-card.featured { grid-column: span 1; }
+  .feature-cell.wide { grid-column: span 1; }
+  .features-grid { background: none; border:none; gap: 1px; }
+  .pricing-grid, .free-plans { grid-template-columns: 1fr 1fr; }
+  .lang-grid { grid-template-columns: 1fr; }
+  .container { padding: 0 20px; }
+  .hero-stats { gap: 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="icon">🏷️</div>
+    Price Scanner
+  </a>
+  <ul class="nav-links">
+    <li><a href="#data-sources">مصادر البيانات</a></li>
+    <li><a href="#features">المميزات</a></li>
+    <li><a href="#appearance">المظهر</a></li>
+    <li><a href="#partner">نظام الشراكة</a></li>
+    <li><a href="#pricing">الأسعار</a></li>
+    <li><a href="#cta" class="nav-cta">تواصل معنا</a></li>
+  </ul>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section id="hero">
+  <div class="container">
+    <div class="hero-grid">
+
+      <div class="hero-content">
+        <div class="hero-badge">الإصدار 3.0.0 — الآن متاح</div>
+        <h1>
+          نظام قراءة الأسعار<br>
+          <span class="accent">الأذكى</span> لبيئة عملك
+        </h1>
+        <p class="hero-desc">
+          امسح. اعرض. استفد. — نظام متكامل يربط مستودعك أو صيدليتك أو متجرك
+          بباركود واحد يُظهر كل شيء: السعر، الكمية، الصلاحية، في ثانية واحدة.
+        </p>
+        <div class="hero-actions">
+          <a href="#pricing" class="btn-primary">🚀 ابدأ الآن</a>
+          <a href="#features" class="btn-secondary">استعرض المميزات</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <div class="stat-num">6+</div>
+            <div class="stat-label">قواعد بيانات مدعومة</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">3</div>
+            <div class="stat-label">لغات واجهة</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">∞</div>
+            <div class="stat-label">إمكانيات تخصيص</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="floating-tag tag-db">🗄️ SQL Server</div>
+        <div class="floating-tag tag-excel">📊 Excel Live</div>
+        <div class="floating-tag tag-live">⚡ قراءة مباشرة</div>
+
+        <div class="scanner-mockup">
+          <div class="mockup-topbar">
+            <div class="dot red"></div>
+            <div class="dot yellow"></div>
+            <div class="dot green"></div>
+            <div class="mockup-title">Price Scanner v3.0.0</div>
+          </div>
+
+          <div class="search-bar">
+            <span class="barcode-icon">▐▌▐▐▌▌▐▌</span>
+            <input type="text" value="6221155000115" readonly>
+          </div>
+
+          <div class="scan-line"></div>
+
+          <div class="result-card">
+            <div class="result-name">باراسيتامول 500 مجم — 20 قرص</div>
+            <div class="result-row">
+              <span class="result-label">الكود</span>
+              <span class="result-value">MED-0042</span>
+            </div>
+            <div class="result-row">
+              <span class="result-label">الكمية</span>
+              <span class="result-value">124 عبوة</span>
+            </div>
+            <div class="result-row">
+              <span class="result-label">الصلاحية</span>
+              <span class="expiry-badge">✓ 08/2026</span>
+            </div>
+            <div class="result-row" style="margin-top:14px">
+              <span class="result-label" style="font-size:.82rem;color:var(--text2)">السعر</span>
+              <span class="result-price">32.50 ج.م.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+<!-- ══ DATA SOURCES ══ -->
+<section id="data-sources">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-tag">مصادر البيانات</div>
+      <h2 class="section-title">بياناتك من أي مصدر — بضغطة واحدة</h2>
+      <p class="section-desc">
+        يتصل البرنامج بمصدر بياناتك مباشرةً ويعرض النتائج لحظيًا، ويمكن التبديل بين المصادر دون إعادة تشغيل.
+      </p>
+    </div>
+
+    <div class="sources-grid reveal">
+
+      <div class="source-card featured">
+        <div class="source-icon gold">🗄️</div>
+        <div class="source-title">قواعد البيانات — دعم شامل</div>
+        <div class="source-desc">
+          تواصل مباشر Live مع قاعدة البيانات الخاصة بنظامك. إعادة اتصال تلقائية عند الانقطاع، وحفظ البيانات محليًا للاعتماد عليها في حالات انقطاع الاتصال.
+        </div>
+        <div class="db-list">
+          <div class="db-item"><span class="db-dot"></span> SQL Server</div>
+          <div class="db-item"><span class="db-dot"></span> MySQL</div>
+          <div class="db-item"><span class="db-dot"></span> Oracle</div>
+          <div class="db-item"><span class="db-dot"></span> PostgreSQL</div>
+          <div class="db-item"><span class="db-dot"></span> SQLite</div>
+          <div class="db-item"><span class="db-dot"></span> Firebird</div>
+        </div>
+      </div>
+
+      <div class="source-card">
+        <div class="source-icon green">📊</div>
+        <div class="source-title">Excel — قراءة مباشرة</div>
+        <div class="source-desc">
+          ربط مباشر بملف Excel مع اكتشاف تلقائي للأعمدة. أي تعديل تحفظه في الملف يظهر فورًا في البرنامج دون إعادة تشغيل.
+        </div>
+        <div class="source-tags">
+          <span class="tag">Auto-detect</span>
+          <span class="tag">Live Reload</span>
+          <span class="tag">Advanced Mode</span>
+        </div>
+      </div>
+
+      <div class="source-card">
+        <div class="source-icon blue">🌐</div>
+        <div class="source-title">REST API — B-Connect</div>
+        <div class="source-desc">
+          ربط البرنامج بأي نظام خارجي عبر API. يدعم ApiKey وBasic Auth مع تعيين مرن لحقول الاستجابة.
+        </div>
+        <div class="source-tags">
+          <span class="tag">ApiKey</span>
+          <span class="tag">Basic Auth</span>
+          <span class="tag">Field Mapping</span>
+        </div>
+      </div>
+
+      <div class="source-card">
+        <div class="source-icon purple">🤝</div>
+        <div class="source-title">الأنظمة المتعاونة</div>
+        <div class="source-desc">
+          بنية خاصة للربط بأنظمة الشركاء مع سحب أعمدتها تلقائيًا وعرض البيانات دون أي تعقيد من المستخدم.
+        </div>
+        <div class="source-tags">
+          <span class="tag">PharmaFly</span>
+          <span class="tag">+ المزيد</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+<!-- ══ FEATURES ══ -->
+<section id="features">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-tag">المميزات</div>
+      <h2 class="section-title">كل ما تحتاجه في منظومة واحدة</h2>
+      <p class="section-desc">مميزات مدروسة لكل احتياجات بيئة العمل التجارية والصيدلانية والمستودعات.</p>
+    </div>
+
+    <div class="features-grid reveal">
+
+      <div class="feature-cell wide">
+        <span class="feature-icon">🏷️</span>
+        <div class="feature-title">الباركود المتعدد لكل صنف</div>
+        <div class="feature-desc">
+          يدعم البرنامج أكثر من باركود لنفس الصنف، سواء كانت مخزنة في أعمدة متجاورة، صفوف رأسية، أو حتى في ملف منفصل. البحث يجد الصنف بأي باركود من باركوداته.
+        </div>
+      </div>
+
+      <div class="feature-cell">
+        <span class="feature-icon">⏱️</span>
+        <div class="feature-title">تفريغ تلقائي للبحث</div>
+        <div class="feature-desc">يُفرّغ مربع البحث تلقائيًا بعد ثانيتين من عدم الضغط على Enter، جاهزًا للمسحة التالية فورًا.</div>
+      </div>
+
+      <div class="feature-cell">
+        <span class="feature-icon">📋</span>
+        <div class="feature-title">التقارير والطباعة</div>
+        <div class="feature-desc">نظام تقارير متكامل مع إعدادات مخصصة، دعم صيغ تصدير متعددة، وطباعة مباشرة.</div>
+      </div>
+
+      <div class="feature-cell">
+        <span class="feature-icon">🔔</span>
+        <div class="feature-title">تحديثات تلقائية</div>
+        <div class="feature-desc">البرنامج يكشف التحديثات الجديدة عند الاتصال بالإنترنت ويثبّتها بموافقتك بضغطة زر واحدة.</div>
+      </div>
+
+      <div class="feature-cell">
+        <span class="feature-icon">💤</span>
+        <div class="feature-title">منع الخمول</div>
+        <div class="feature-desc">خيارات منع خمول الشاشة وعدم الدخول في وضع Sleep للحفاظ على الشاشة نشطة طوال وقت العمل.</div>
+      </div>
+
+      <div class="feature-cell">
+        <span class="feature-icon">🚀</span>
+        <div class="feature-title">تشغيل مع Windows</div>
+        <div class="feature-desc">خيار التشغيل التلقائي مع بدء Windows — شاشتك جاهزة فور تشغيل الجهاز دون أي تدخل.</div>
+      </div>
+
+      <div class="feature-cell">
+        <span class="feature-icon">💾</span>
+        <div class="feature-title">نسخ احتياطي للإعدادات</div>
+        <div class="feature-desc">احفظ كل إعداداتك في ملف خارجي واستعدها في أي وقت — مثالي عند تغيير الجهاز أو تثبيت نسخة جديدة.</div>
+      </div>
+
+      <div class="feature-cell">
+        <span class="feature-icon">🎭</span>
+        <div class="feature-title">إخفاء/إظهار العناصر</div>
+        <div class="feature-desc">
+          تحكم كامل في كل عنصر مرئي بشكل مستقل:
+          <ul class="feature-list">
+            <li>الكود — المنتج — السعر — الكمية</li>
+            <li>تواريخ الصلاحية — اللوجو</li>
+            <li>الساعة والتاريخ — رصيد المسحات</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="feature-cell">
+        <span class="feature-icon">🔌</span>
+        <div class="feature-title">حفظ البيانات أوفلاين</div>
+        <div class="feature-desc">عند انقطاع الاتصال بقاعدة البيانات يعتمد البرنامج على آخر بيانات محفوظة — العمل لا يتوقف أبدًا.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+<!-- ══ APPEARANCE ══ -->
+<section id="appearance">
+  <div class="container">
+    <div class="appear-grid">
+
+      <div class="appear-visual reveal">
+        <div class="screen-preview">
+          <div class="screen-topbar">
+            <span>بالتعاون مع: الشركة المتعاونة</span>
+            <span class="company">مؤسستكم التجارية</span>
+          </div>
+          <div class="screen-body">
+            <div class="screen-logo">🏷️ LOGO</div>
+            <div class="screen-result-big">
+              <div class="screen-product">شامبو بانتين — 400 مل</div>
+              <div class="screen-price-big">89.00 ج.م.</div>
+            </div>
+            <div class="screen-datetime">26/04/2026  ◈  10:45 ص</div>
+          </div>
+        </div>
+        <div class="transition-pills" style="margin-top:16px;">
+          <span class="pill active">🎨 لون</span>
+          <span class="pill">🖼️ صورة</span>
+          <span class="pill">🎞️ ألبوم صور</span>
+          <span class="pill">🎬 فيديو</span>
+          <span class="pill">📂 ألبوم فيديو</span>
+        </div>
+      </div>
+
+      <div class="appear-content reveal">
+        <div class="section-tag">تخصيص المظهر</div>
+        <h2>شاشتك — هويتك التجارية</h2>
+        <p>حوّل شاشة البحث إلى واجهة احترافية تعكس هوية مؤسستك بالكامل، مع تحكم دقيق في كل تفصيلة.</p>
+
+        <div class="appear-options">
+          <div class="appear-option">
+            <div class="appear-option-icon gold">🎬</div>
+            <div class="appear-option-text">
+              <div class="title">خلفية فيديو وألبومات</div>
+              <div class="sub">تبديل سلس · مفاجئ · متداخل — تحكم كامل في الصوت والتعتيم</div>
+            </div>
+          </div>
+          <div class="appear-option">
+            <div class="appear-option-icon gold">🖼️</div>
+            <div class="appear-option-text">
+              <div class="title">ألبوم صور بعرض تلقائي</div>
+              <div class="sub">حدد مجلد الصور ومدة عرض كل صورة</div>
+            </div>
+          </div>
+          <div class="appear-option">
+            <div class="appear-option-icon blue">🎵</div>
+            <div class="appear-option-text">
+              <div class="title">موسيقى خلفية مستقلة (MP3)</div>
+              <div class="sub">ملف صوتي مستقل عن الفيديو — تحكم كامل في الصوت</div>
+            </div>
+          </div>
+          <div class="appear-option">
+            <div class="appear-option-icon gold">🏷️</div>
+            <div class="appear-option-text">
+              <div class="title">إدارة اللوجو بالكامل</div>
+              <div class="sub">الحجم (0.3×–2.0×) · الشفافية · الموقع · إخفاء / استعادة</div>
+            </div>
+          </div>
+          <div class="appear-option">
+            <div class="appear-option-icon purple">✨</div>
+            <div class="appear-option-text">
+              <div class="title">شفافية مستقلة لكل عنصر</div>
+              <div class="sub">اللوجو · الساعة · جدول الصلاحيات — كل واحد على حدة</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+<!-- ══ EXPIRY ══ -->
+<section id="expiry">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-tag">الصلاحيات والكميات</div>
+      <h2 class="section-title">إدارة المخزون بدقة مطلقة</h2>
+      <p class="section-desc">نظام متكامل لتتبع تواريخ الصلاحية وحساب الكميات الفعلية لحظيًا.</p>
+    </div>
+
+    <div class="expiry-layout">
+
+      <div class="expiry-table reveal">
+        <div class="expiry-table-header">
+          <span>الصنف</span>
+          <span>الكمية</span>
+          <span>الصلاحية</span>
+          <span>الحالة</span>
+        </div>
+        <div class="expiry-row">
+          <span>بنادول 500 مجم</span>
+          <span>240 عبوة</span>
+          <span>12/2027</span>
+          <span><span class="badge-ok">✓ سليم</span></span>
+        </div>
+        <div class="expiry-row warn">
+          <span>أموكسيسيلين</span>
+          <span>38 عبوة</span>
+          <span>03/2025</span>
+          <span><span class="badge-warn">⚠️ قريب</span></span>
+        </div>
+        <div class="expiry-row expired">
+          <span>شراب كحة قديم</span>
+          <span>12 عبوة</span>
+          <span>01/2025</span>
+          <span><span class="badge-exp">✗ منتهي</span></span>
+        </div>
+        <div class="expiry-row">
+          <span>فيتامين C 1000</span>
+          <span>3:8 عبوة</span>
+          <span>06/2026</span>
+          <span><span class="badge-ok">✓ سليم</span></span>
+        </div>
+        <div class="expiry-row warn">
+          <span>ديكسامين أقراص</span>
+          <span>56 عبوة</span>
+          <span>05/2025</span>
+          <span><span class="badge-warn">⚠️ قريب</span></span>
+        </div>
+      </div>
+
+      <div class="expiry-features reveal">
+
+        <div class="expiry-feature">
+          <div class="ef-icon cyan">📦</div>
+          <div>
+            <div class="ef-title">نظام العبوات والأجزاء</div>
+            <div class="ef-desc">يحسب الكمية الحقيقية فوريًا: (عدد العبوات × التقسيم) + الأجزاء المنفردة — سواء في خلية واحدة أو عمودين.</div>
+          </div>
+        </div>
+
+        <div class="expiry-feature">
+          <div class="ef-icon gold">⚠️</div>
+          <div>
+            <div class="ef-title">تحذير مسبق قابل للتخصيص</div>
+            <div class="ef-desc">حدد عدد أشهر التحذير المسبق. الأصناف التي تقترب من الصلاحية تتغير ألوانها تلقائيًا في العرض.</div>
+          </div>
+        </div>
+
+        <div class="expiry-feature">
+          <div class="ef-icon red">❌</div>
+          <div>
+            <div class="ef-title">كشف المنتهي الصلاحية فورًا</div>
+            <div class="ef-desc">علامة X حمراء واضحة لأي صنف انتهت صلاحيته مع خيار اعتبار الشهر الحالي منتهيًا أم لا.</div>
+          </div>
+        </div>
+
+        <div class="expiry-feature">
+          <div class="ef-icon cyan">📊</div>
+          <div>
+            <div class="ef-title">مصادر الصلاحيات متعددة</div>
+            <div class="ef-desc">قراءة تواريخ الصلاحية من نفس الصف في Excel، أو من شيت منفصل، أو من ملف Excel آخر كاملًا.</div>
+          </div>
+        </div>
+
+        <div class="expiry-feature">
+          <div class="ef-icon gold">🔍</div>
+          <div>
+            <div class="ef-title">وضع المدير للعرض الإداري</div>
+            <div class="ef-desc">تفعيل وضع المدير بباركود خاص أو أيقونة — يعرض جدول كامل بكل الصلاحيات والكميات المفصّلة.</div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+<!-- ══ MULTILANG ══ -->
+<section id="multilang">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-tag">التعددية</div>
+      <h2 class="section-title">يتكلم لغتك ويعرض عملتك</h2>
+      <p class="section-desc">دعم كامل لثلاث لغات وخمس عملات — البرنامج يتكيف مع سوقك المحلي.</p>
+    </div>
+
+    <div class="lang-grid reveal">
+      <div class="lang-card">
+        <div class="lang-flag">🇪🇬</div>
+        <div class="lang-name">العربية</div>
+        <div class="lang-code">AR</div>
+        <div class="lang-dir">← الاتجاه من اليمين لليسار (RTL)</div>
+      </div>
+      <div class="lang-card">
+        <div class="lang-flag">🇺🇸</div>
+        <div class="lang-name">English</div>
+        <div class="lang-code">EN</div>
+        <div class="lang-dir">Left to Right direction (LTR) →</div>
+      </div>
+      <div class="lang-card">
+        <div class="lang-flag">🇫🇷</div>
+        <div class="lang-name">Français</div>
+        <div class="lang-code">FR</div>
+        <div class="lang-dir">Gauche à droite (LTR) →</div>
+      </div>
+    </div>
+
+    <div class="currency-grid reveal">
+      <div class="currency-item">
+        <span class="currency-symbol">ج.م.</span>
+        <span class="currency-name">الجنيه المصري</span>
+      </div>
+      <div class="currency-item">
+        <span class="currency-symbol">$</span>
+        <span class="currency-name">الدولار الأمريكي</span>
+      </div>
+      <div class="currency-item">
+        <span class="currency-symbol">€</span>
+        <span class="currency-name">اليورو</span>
+      </div>
+      <div class="currency-item">
+        <span class="currency-symbol">£</span>
+        <span class="currency-name">الجنيه الإسترليني</span>
+      </div>
+      <div class="currency-item">
+        <span class="currency-symbol">¥</span>
+        <span class="currency-name">الين الياباني</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+<!-- ══ PARTNER SYSTEM ══ -->
+<section id="partner">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-tag">نظام الشراكة</div>
+      <h2 class="section-title">ثلاثة مستويات — تحكم كامل</h2>
+      <p class="section-desc">نظام صلاحيات هرمي يضمن أن يرى كل شخص ما يخصه فقط.</p>
+    </div>
+
+    <div class="partner-grid">
+
+      <div class="partner-levels reveal">
+        <div class="level-card dev">
+          <div class="level-badge dev">المطور</div>
+          <div class="level-title" style="margin-top:8px">مستوى المطور 🛠️</div>
+          <div class="level-desc">وصول كامل لجميع الإعدادات بما فيها تبويب المطور المحمي — يتحكم في باسووردات جميع المستويات.</div>
+        </div>
+        <div class="level-card partner">
+          <div class="level-badge partner">المتعاون</div>
+          <div class="level-title" style="margin-top:8px">مستوى المتعاون 🤝</div>
+          <div class="level-desc">وصول للإعدادات العامة + تبويب المتعاون الخاص به — يتحكم في إعدادات المستخدمين تحته.</div>
+        </div>
+        <div class="level-card user">
+          <div class="level-badge user">المستخدم</div>
+          <div class="level-title" style="margin-top:8px">مستوى المستخدم 👤</div>
+          <div class="level-desc">وصول للإعدادات الأساسية فقط — واجهة بسيطة دون تعقيد أو تشتيت.</div>
+        </div>
+      </div>
+
+      <div class="partner-features-right reveal">
+        <div class="pf-item">
+          <span class="pf-item-icon">🏢</span>
+          <div>
+            <div class="pf-item-title">هوية مزدوجة في الشريط العلوي</div>
+            <div class="pf-item-desc">اسم المؤسسة على اليمين، اسم الشريك المتعاون على اليسار — تخصيص كامل من تبويب الشريك.</div>
+          </div>
+        </div>
+        <div class="pf-item">
+          <span class="pf-item-icon">🔒</span>
+          <div>
+            <div class="pf-item-title">تبويب المطور بكلمة سر خاصة</div>
+            <div class="pf-item-desc">كل تعديل في تبويب المطور يتطلب إدخال كلمة السر من جديد — حماية مزدوجة من الوصول غير المصرح.</div>
+          </div>
+        </div>
+        <div class="pf-item">
+          <span class="pf-item-icon">📤</span>
+          <div>
+            <div class="pf-item-title">حفظ واستيراد الإعدادات</div>
+            <div class="pf-item-desc">أرسل ملف الإعدادات لعميلك ليطبّقها بضغطة زر — توحيد الإعدادات لعدة فروع في ثوانٍ.</div>
+          </div>
+        </div>
+        <div class="pf-item">
+          <span class="pf-item-icon">🔗</span>
+          <div>
+            <div class="pf-item-title">دعم الأنظمة المتعاونة</div>
+            <div class="pf-item-desc">ربط مؤسسة العميل بنظامك كشريك متعاون مع سحب البيانات وعرضها بشكل متكامل وشفاف.</div>
+          </div>
+        </div>
+        <div class="pf-item">
+          <span class="pf-item-icon">💬</span>
+          <div>
+            <div class="pf-item-title">تواصل مباشر عبر واتساب</div>
+            <div class="pf-item-desc">زر داخل البرنامج يفتح واتساب برسالة معدة مسبقًا تحتوي على بيانات الجهاز للدعم الفني الفوري.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+<!-- ══ PRICING ══ -->
+<section id="pricing">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-tag">الاشتراكات</div>
+      <h2 class="section-title">باقة لكل احتياج</h2>
+      <p class="section-desc">ابدأ مجانًا وطوّر اشتراكك مع نمو أعمالك. كل باقة تُفعّل بباركود يرسله المطور مباشرةً.</p>
+    </div>
+
+    <div class="pricing-grid reveal">
+      <div class="price-card">
+        <div class="plan-name">بسيط</div>
+        <div class="plan-scans">20K</div>
+        <div class="plan-scans-unit">مسحة</div>
+        <div class="plan-price">2,000</div>
+        <div class="plan-currency">جنيه مصري</div>
+      </div>
+      <div class="price-card">
+        <div class="plan-name">متوسط</div>
+        <div class="plan-scans">50K</div>
+        <div class="plan-scans-unit">مسحة</div>
+        <div class="plan-price">4,000</div>
+        <div class="plan-currency">جنيه مصري</div>
+      </div>
+      <div class="price-card featured">
+        <div class="featured-label"><span>⭐ الأشهر</span></div>
+        <div class="plan-name">مرتفع</div>
+        <div class="plan-scans">120K</div>
+        <div class="plan-scans-unit">مسحة</div>
+        <div class="plan-price">8,000</div>
+        <div class="plan-currency">جنيه مصري</div>
+      </div>
+      <div class="price-card">
+        <div class="plan-name">متقدم</div>
+        <div class="plan-scans">250K</div>
+        <div class="plan-scans-unit">مسحة</div>
+        <div class="plan-price">14,000</div>
+        <div class="plan-currency">جنيه مصري</div>
+      </div>
+      <div class="price-card" style="border-color: rgba(167,139,250,.3); background: linear-gradient(160deg,var(--surface),rgba(167,139,250,.06))">
+        <div class="plan-name" style="color:#a78bfa">مدى الحياة</div>
+        <div class="plan-scans" style="color:#a78bfa">∞</div>
+        <div class="plan-scans-unit">غير محدود</div>
+        <div class="plan-price">20,000</div>
+        <div class="plan-currency">جنيه مصري — مرة واحدة</div>
+      </div>
+    </div>
+
+    <div class="free-plans reveal" style="margin-top:32px;">
+      <div class="free-card">
+        <div class="plan-name">تجريبي</div>
+        <div class="plan-scans">10</div>
+        <div class="plan-scans-unit" style="font-size:.78rem;color:var(--text3);">مسحات — مجاني</div>
+      </div>
+      <div class="free-card">
+        <div class="plan-name">أفراد</div>
+        <div class="plan-scans">200</div>
+        <div class="plan-scans-unit" style="font-size:.78rem;color:var(--text3);">مسحة — مجاني</div>
+      </div>
+      <div class="free-card">
+        <div class="plan-name">مؤسسات</div>
+        <div class="plan-scans">1,000</div>
+        <div class="plan-scans-unit" style="font-size:.78rem;color:var(--text3);">مسحة — مجاني</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+<!-- ══ CTA ══ -->
+<section id="cta">
+  <div class="container">
+    <div class="cta-inner reveal">
+      <div class="section-tag">تواصل معنا</div>
+      <h2 class="cta-title">جاهز للبدء؟<br><span style="color:var(--gold)">نحن هنا معك.</span></h2>
+      <p class="cta-desc">
+        ابدأ باشتراك مجاني الآن، أو تواصل معنا مباشرةً لمعرفة الباقة المناسبة لحجم مؤسستك.
+      </p>
+      <div>
+        <a href="#" class="btn-primary" style="font-size:1.05rem; padding:15px 36px;">
+          📲 تواصل عبر واتساب
+        </a>
+      </div>
+
+      <div class="contact-methods">
+        <div class="contact-card">
+          <div class="contact-icon">📱</div>
+          <div class="contact-label">واتساب مباشر</div>
+          <div class="contact-value">من داخل البرنامج</div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-icon">🔑</div>
+          <div class="contact-label">التفعيل</div>
+          <div class="contact-value">QR Code · Barcode</div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-icon">🎁</div>
+          <div class="contact-label">ابدأ مجانًا</div>
+          <div class="contact-value">بدون بطاقة ائتمانية</div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-icon">⚡</div>
+          <div class="contact-label">دعم فني</div>
+          <div class="contact-value">سريع وموثوق</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <p>
+      صُنع بـ ❤️ — <span>Price Scanner</span> v3.0.0 &nbsp;|&nbsp; جميع الحقوق محفوظة &copy; 2026
+    </p>
+  </div>
+</footer>
+
+<script>
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 80);
+    }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Nav active state
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 140) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.style.color = a.getAttribute('href') === '#' + current
+      ? 'var(--gold)' : '';
+  });
+});
+
+// Pill toggle in appearance
+document.querySelectorAll('.pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    pill.closest('.transition-pills').querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+  });
+});
+
+// Typewriter in search bar
+const codes = ['6221155000115', '3700051001248', '8001841204013', '5010123010006'];
+let ci = 0;
+const input = document.querySelector('.search-bar input');
+if (input) {
+  setInterval(() => {
+    ci = (ci + 1) % codes.length;
+    input.value = '';
+    let j = 0;
+    const type = setInterval(() => {
+      input.value += codes[ci][j++];
+      if (j >= codes[ci].length) clearInterval(type);
+    }, 80);
+  }, 3500);
+}
+</script>
+
+</body>
+</html>
