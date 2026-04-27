@@ -442,7 +442,7 @@ h1 .accent2 { color: var(--cyan); }
 
 .appear-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1.15fr 1fr;
   gap: 60px;
   align-items: center;
 }
@@ -477,69 +477,298 @@ h1 .accent2 { color: var(--cyan); }
 .appear-option-text .title { font-weight: 700; font-size: 0.92rem; margin-bottom: 3px; }
 .appear-option-text .sub { color: var(--text2); font-size: 0.8rem; }
 
-.appear-visual {
-  position: relative;
-}
+/* ── App Mockup ── */
+.appear-visual { position: relative; }
 
-.screen-preview {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
+.app-mockup-wrap {
+  position: relative;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 30px 80px rgba(0,0,0,.5);
+  box-shadow: 0 40px 100px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.06);
+  aspect-ratio: 16/9;
+  font-family: 'Cairo', sans-serif;
 }
 
-.screen-topbar {
-  background: var(--bg);
-  padding: 14px 20px;
+/* backgrounds */
+.app-bg {
+  position: absolute; inset: 0;
+  transition: opacity .5s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+.app-bg.active { opacity: 1; }
+
+.bg-color   { background: linear-gradient(135deg,#1a2e1a 0%,#0d1a2e 100%); }
+.bg-image   {
+  background:
+    linear-gradient(rgba(0,0,0,.52),rgba(0,0,0,.52)),
+    repeating-linear-gradient(45deg,#1a2a1a 0px,#243324 40px,#1e2d1e 40px,#2a3d2a 80px);
+}
+.bg-slideshow {
+  background: linear-gradient(135deg,#2a1a0d 0%,#1a0d2a 50%,#0d2a1a 100%);
+  animation: bgSlide 3s ease-in-out infinite alternate;
+}
+@keyframes bgSlide {
+  from{ background: linear-gradient(135deg,#2a1a0d,#0d2a1a); }
+  to  { background: linear-gradient(225deg,#0d1a2a,#2a0d1a); }
+}
+.bg-video {
+  background: url('https://picsum.photos/seed/cinema55/900/506') center/cover no-repeat;
+}
+.bg-video::after {
+  content:'';
+  position:absolute;inset:0;
+  background: rgba(0,0,0,.3);
+  animation: videoFlicker 3s ease-in-out infinite alternate;
+}
+@keyframes videoFlicker {
+  0%  { backdrop-filter: brightness(.85) saturate(1.1); }
+  50% { backdrop-filter: brightness(.7)  saturate(1.3) hue-rotate(8deg); }
+  100%{ backdrop-filter: brightness(.9)  saturate(1.0); }
+}
+.bg-album-video { position: absolute; inset: 0; }
+
+/* overlay dim */
+.app-overlay {
+  position: absolute; inset: 0; z-index: 2;
+  background: rgba(0,0,0,.38);
+}
+
+/* topbar */
+.app-topbar {
+  position: absolute; top: 0; inset-inline: 0; z-index: 10;
+  background: rgba(0,0,0,.65);
+  backdrop-filter: blur(8px);
+  padding: 7px 14px;
   display: flex; align-items: center; justify-content: space-between;
-  border-bottom: 1px solid var(--border);
-  font-size: 0.8rem; color: var(--text3);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  font-size: .68rem;
 }
-.screen-topbar .company { color: var(--text); font-weight: 700; }
-
-.screen-body {
-  padding: 30px;
-  background: linear-gradient(135deg, #0f1a0f 0%, #0a1020 100%);
-  min-height: 200px;
-  position: relative;
-  display: flex; align-items: center; justify-content: center;
+.app-topbar .partner-name { color: rgba(255,255,255,.5); }
+.app-topbar .app-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700; font-size: .7rem; color: rgba(255,255,255,.85);
+  display: flex; align-items: center; gap: 6px;
 }
+.app-title .ver-badge {
+  background: #7bc67b; color: #0a1a0a;
+  border-radius: 4px; padding: 1px 6px;
+  font-size: .6rem; font-weight: 700;
+}
+.app-topbar .inst-name { color: #fff; font-weight: 700; font-size: .72rem; }
 
-.screen-logo {
-  position: absolute; top: 16px; right: 16px;
-  background: rgba(255,255,255,0.08);
+/* update bar */
+.app-update-bar {
+  position: absolute; top: 30px; left: 50%; transform: translateX(-50%); z-index: 15;
+  background: rgba(20,20,40,.9);
+  border: 1px solid rgba(100,180,100,.3);
   border-radius: 8px;
-  padding: 6px 12px;
-  font-size: 0.8rem; font-weight: 700; color: rgba(255,255,255,0.6);
+  padding: 5px 10px;
+  display: flex; align-items: center; gap: 8px;
+  font-size: .62rem; white-space: nowrap;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0,0,0,.4);
+}
+.app-update-bar .upd-btn {
+  background: #5ab85a; color: #fff;
+  border-radius: 5px; padding: 3px 10px;
+  font-weight: 700; font-size: .62rem; cursor: pointer;
+}
+.app-update-bar .upd-x {
+  background: rgba(255,255,255,.1);
+  border-radius: 4px; padding: 2px 6px; cursor: pointer;
+  font-size: .6rem; color: rgba(255,255,255,.5);
+}
+.app-update-bar .upd-text { color: rgba(255,255,255,.75); }
+.app-update-bar .upd-icon { font-size: .8rem; }
+
+/* logo */
+.app-logo {
+  position: absolute; top: 38px; right: 14px; z-index: 10;
+  background: rgba(255,255,255,.08);
+  border-radius: 8px; padding: 5px 10px;
+  display: flex; align-items: center; gap: 5px;
+  font-size: .58rem; font-weight: 700;
+  color: rgba(255,255,255,.7);
+  backdrop-filter: blur(6px);
+}
+.app-logo .logo-icon { font-size: 1rem; }
+
+/* clock */
+.app-clock {
+  position: absolute; top: 36px; left: 14px; z-index: 10;
+  text-align: left; direction: ltr;
+}
+.app-clock .time { font-family: 'JetBrains Mono', monospace; font-size: 1rem; font-weight: 700; color: #fff; }
+.app-clock .date { font-size: .6rem; color: rgba(255,255,255,.55); margin-top: 1px; }
+
+/* product display */
+.app-product {
+  position: absolute; inset: 0; z-index: 8;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 60px 20px 60px;
+}
+.app-field-label {
+  font-size: .62rem; color: rgba(255,255,255,.5);
+  margin-bottom: 2px;
+  letter-spacing: .05em;
+}
+.app-code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .88rem; color: rgba(255,255,255,.7);
+  margin-bottom: 8px;
+}
+.app-pname {
+  font-size: 1.45rem; font-weight: 900;
+  color: #fff;
+  margin-bottom: 10px;
+  text-shadow: 0 2px 12px rgba(0,0,0,.5);
+  line-height: 1.2;
+}
+.app-price-row {
+  display: flex; align-items: baseline; gap: 6px;
+  justify-content: center;
+}
+.app-price {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2.1rem; font-weight: 900;
+  color: #b5f542;
+  text-shadow: 0 0 30px rgba(181,245,66,.4);
+}
+.app-currency {
+  font-size: .9rem; font-weight: 700;
+  color: #b5f542;
 }
 
-.screen-result-big {
+/* qty info */
+.app-qty-info {
+  position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
+  z-index: 10;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .7rem; color: rgba(255,255,255,.45);
+}
+
+/* expiry table */
+.app-expiry {
+  position: absolute; bottom: 28px; right: 14px; z-index: 10;
+  background: rgba(0,0,0,.75);
+  border-radius: 8px; overflow: hidden;
+  min-width: 140px;
+  backdrop-filter: blur(8px);
+  font-size: .6rem;
+}
+.app-expiry-header {
+  display: grid; grid-template-columns: 1fr 1fr 14px;
+  gap: 0; padding: 4px 8px;
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.45);
+  font-weight: 700;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  direction: ltr;
+}
+.app-expiry-row {
+  display: grid; grid-template-columns: 1fr 1fr 14px;
+  gap: 0; padding: 4px 8px;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+  align-items: center;
+  direction: ltr;
+}
+.app-expiry-row:last-child { border-bottom: none; }
+.app-expiry-row.exp  { background: rgba(200,50,50,.15); }
+.app-expiry-row.warn { background: rgba(200,150,50,.1); }
+.app-expiry-row.ok   { background: transparent; }
+.exp-icon  { font-size: .65rem; margin-left: 4px; }
+.exp-date  { color: rgba(255,255,255,.75); direction: ltr; font-family: 'JetBrains Mono', monospace; }
+.exp-qty   { color: rgba(255,255,255,.6); direction: ltr; font-family: 'JetBrains Mono', monospace; }
+.row-exp  .exp-date { color: #ff7070; }
+.row-warn .exp-date { color: #ffcc44; }
+.row-ok   .exp-date { color: #7bc67b; }
+
+/* bottom bar */
+.app-bottombar {
+  position: absolute; bottom: 0; inset-inline: 0; z-index: 10;
+  background: rgba(0,0,0,.7);
+  border-top: 1px solid rgba(255,255,255,.06);
+  padding: 5px 12px;
+  display: flex; align-items: center; justify-content: space-between;
+  backdrop-filter: blur(8px);
+}
+.app-scans {
+  display: flex; align-items: center; gap: 5px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 5px; padding: 2px 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .6rem; color: rgba(255,255,255,.6);
+}
+.app-scans .scans-num { color: #fff; font-weight: 700; }
+.app-search-bar {
+  flex: 1; margin: 0 10px;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 5px; height: 18px;
+  position: relative; overflow: hidden;
+}
+.app-search-bar::after {
+  content:'';
+  position:absolute; top:0; bottom:0; left:0;
+  width: 30%; background: rgba(255,255,255,.12);
+  animation: searchPulse 2s ease-in-out infinite;
+}
+@keyframes searchPulse { 0%,100%{left:0%;width:0%} 50%{left:20%;width:60%} }
+.app-icons {
+  display: flex; gap: 5px;
+}
+.app-icons span {
+  width: 18px; height: 18px; border-radius: 4px;
+  background: rgba(255,255,255,.07);
+  display: grid; place-items: center;
+  font-size: .55rem; cursor: pointer;
+  transition: background .2s;
+}
+.app-icons span:hover { background: rgba(255,255,255,.15); }
+
+/* scan confirm */
+.app-scan-confirm {
+  position: absolute; bottom: 24px; inset-inline: 0; z-index: 11;
   text-align: center;
-}
-.screen-product { font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
-.screen-price-big {
-  font-size: 2.4rem; font-weight: 900;
-  color: var(--gold);
-  font-family: 'JetBrains Mono', monospace;
+  font-size: .6rem; color: rgba(255,255,255,.4);
 }
 
-.screen-datetime {
-  position: absolute; bottom: 14px; left: 16px;
-  font-size: 0.75rem; color: rgba(255,255,255,.35);
-  font-family: 'JetBrains Mono', monospace;
-}
-
+/* pills */
 .transition-pills {
-  display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap;
+  display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap;
 }
 .pill {
   background: var(--bg2); border: 1px solid var(--border);
-  border-radius: 100px; padding: 5px 14px;
-  font-size: 0.78rem; color: var(--text2); cursor: default;
-  transition: background .2s, border-color .2s, color .2s;
+  border-radius: 100px; padding: 7px 16px;
+  font-size: 0.8rem; color: var(--text2); cursor: pointer;
+  transition: background .25s, border-color .25s, color .25s, transform .15s;
+  user-select: none;
 }
-.pill:hover, .pill.active { background: var(--gold-dim); border-color: var(--gold); color: var(--gold); }
+.pill:hover { background: var(--surface2); border-color: rgba(255,255,255,.15); transform: translateY(-1px); }
+.pill.active {
+  background: var(--gold-dim); border-color: var(--gold);
+  color: var(--gold); transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(232,168,76,.2);
+}
+
+/* pill label */
+.bg-label {
+  position: absolute; top: 34px; left: 50%; transform: translateX(-50%);
+  z-index: 20; opacity: 0;
+  background: rgba(0,0,0,.7);
+  color: var(--gold);
+  border: 1px solid rgba(232,168,76,.3);
+  border-radius: 100px;
+  padding: 3px 14px; font-size: .65rem; font-weight: 700;
+  pointer-events: none;
+  transition: opacity .3s;
+  white-space: nowrap;
+  backdrop-filter: blur(8px);
+}
+.bg-label.show { opacity: 1; }
 
 /* ══ EXPIRY ══ */
 #expiry { padding: 110px 0; background: var(--bg2); }
@@ -1092,27 +1321,149 @@ footer span { color: var(--gold); }
     <div class="appear-grid">
 
       <div class="appear-visual reveal">
-        <div class="screen-preview">
-          <div class="screen-topbar">
-            <span>بالتعاون مع: الشركة المتعاونة</span>
-            <span class="company">مؤسستكم التجارية</span>
+
+        <!-- ══ REAL APP MOCKUP ══ -->
+        <div class="app-mockup-wrap" id="appMockup" dir="ltr">
+
+          <!-- ── Slideshow slides (hidden by default, shown via JS) ── -->
+          <div class="app-bg bg-color active" id="bg-color"></div>
+
+          <!-- Static photo -->
+          <div class="app-bg bg-image" id="bg-image"
+               style="background:url('https://picsum.photos/seed/pharma99/900/506') center/cover no-repeat;"></div>
+
+          <!-- Slideshow: JS cycles these -->
+          <div class="app-bg bg-slideshow" id="bg-slideshow">
+            <div class="slide-layer" id="slide-a" style="position:absolute;inset:0;transition:opacity .9s;background:url('https://picsum.photos/seed/med11/900/506') center/cover no-repeat;"></div>
+            <div class="slide-layer" id="slide-b" style="position:absolute;inset:0;transition:opacity .9s;opacity:0;background:url('https://picsum.photos/seed/shop22/900/506') center/cover no-repeat;"></div>
+            <div class="slide-layer" id="slide-c" style="position:absolute;inset:0;transition:opacity .9s;opacity:0;background:url('https://picsum.photos/seed/store33/900/506') center/cover no-repeat;"></div>
+            <div class="slide-layer" id="slide-d" style="position:absolute;inset:0;transition:opacity .9s;opacity:0;background:url('https://picsum.photos/seed/nature44/900/506') center/cover no-repeat;"></div>
           </div>
-          <div class="screen-body">
-            <div class="screen-logo">🏷️ LOGO</div>
-            <div class="screen-result-big">
-              <div class="screen-product">شامبو بانتين — 400 مل</div>
-              <div class="screen-price-big">89.00 ج.م.</div>
+
+          <!-- Video bg -->
+          <div class="app-bg bg-video" id="bg-video"></div>
+
+          <!-- Video album: JS cycles frames -->
+          <div class="app-bg bg-album-video" id="bg-album-video">
+            <div class="vframe active" id="vf-0"
+                 style="position:absolute;inset:0;transition:opacity .6s;background:url('https://picsum.photos/seed/vid1/900/506') center/cover;"></div>
+            <div class="vframe" id="vf-1"
+                 style="position:absolute;inset:0;transition:opacity .6s;opacity:0;background:url('https://picsum.photos/seed/vid2/900/506') center/cover;"></div>
+            <div class="vframe" id="vf-2"
+                 style="position:absolute;inset:0;transition:opacity .6s;opacity:0;background:url('https://picsum.photos/seed/vid3/900/506') center/cover;"></div>
+            <div class="vframe" id="vf-3"
+                 style="position:absolute;inset:0;transition:opacity .6s;opacity:0;background:url('https://picsum.photos/seed/vid4/900/506') center/cover;"></div>
+            <!-- play icon overlay -->
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3;pointer-events:none;">
+              <div style="background:rgba(0,0,0,.45);border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:1rem;border:2px solid rgba(255,255,255,.5);">▶</div>
             </div>
-            <div class="screen-datetime">26/04/2026  ◈  10:45 ص</div>
           </div>
+
+          <!-- dim overlay -->
+          <div class="app-overlay"></div>
+
+          <!-- bg label -->
+          <div class="bg-label" id="bgLabel">لون خلفية</div>
+
+          <!-- ── TOP BAR (LTR: left=partner, center=title, right=institution) ── -->
+          <div class="app-topbar">
+            <span class="partner-name" dir="rtl">مع PharmaFly</span>
+            <div class="app-title">
+              <span class="ver-badge">v3.0.0</span>
+              Price Scanner Pro
+            </div>
+            <span class="inst-name" dir="rtl">صيدليات مقصود رضا</span>
+          </div>
+
+          <!-- update bar -->
+          <div class="app-update-bar">
+            <span class="upd-icon">🛸</span>
+            <span class="upd-text">3.1.1 — تحديث جديد متوفر</span>
+            <span class="upd-btn">تحديث الآن</span>
+            <span class="upd-x">28 ✕</span>
+          </div>
+
+          <!-- clock — LEFT side (LTR) -->
+          <div class="app-clock" style="left:14px;right:auto;text-align:left;">
+            <div class="time" id="mockClock">04:49 PM</div>
+            <div class="date" dir="rtl">الأحد، 26 أبريل 2026</div>
+          </div>
+
+          <!-- logo — RIGHT side (LTR) -->
+          <div class="app-logo" style="right:14px;left:auto;" dir="rtl">
+            <span>مقصود رضا</span>
+            <span class="logo-icon">⚕️</span>
+          </div>
+
+          <!-- product -->
+          <div class="app-product" dir="rtl">
+            <div class="app-field-label">الكود:</div>
+            <div class="app-code" id="mockCode">34871</div>
+            <div class="app-field-label">المنتج:</div>
+            <div class="app-pname" id="mockProduct">AVIL 2CC 6AMP</div>
+            <div class="app-field-label" style="margin-top:10px">السعر:</div>
+            <div class="app-price-row">
+              <div class="app-currency">ج.م.</div>
+              <div class="app-price" id="mockPrice">57.00</div>
+            </div>
+          </div>
+
+          <!-- qty info -->
+          <div class="app-qty-info">4 : 6</div>
+
+          <!-- expiry table — LEFT side (LTR = right side visually = bottom-left of RTL app) -->
+          <div class="app-expiry" style="left:14px;right:auto;" dir="ltr">
+            <div class="app-expiry-header">
+              <span>الكمية</span>
+              <span>الصلاحية</span>
+              <span style="width:14px;text-align:center;"></span>
+            </div>
+            <div class="app-expiry-row exp row-exp">
+              <span class="exp-qty">1 : 1</span>
+              <span class="exp-date">2026/04</span>
+              <span class="exp-icon">✗</span>
+            </div>
+            <div class="app-expiry-row warn row-warn">
+              <span class="exp-qty">2 : 3</span>
+              <span class="exp-date">2027/03</span>
+              <span class="exp-icon">⚠</span>
+            </div>
+            <div class="app-expiry-row ok row-ok">
+              <span class="exp-qty">3</span>
+              <span class="exp-date">2027/12</span>
+              <span class="exp-icon">✓</span>
+            </div>
+          </div>
+
+          <!-- bottom bar (LTR: left=icons, center=search, right=scans) -->
+          <div class="app-bottombar">
+            <div class="app-icons">
+              <span>⚙️</span>
+              <span>🔐</span>
+              <span>📘</span>
+              <span>💬</span>
+            </div>
+            <div class="app-search-bar"></div>
+            <div class="app-scans" dir="rtl">
+              <span class="scans-num">19,947</span>
+              <span>:المسحات</span>
+            </div>
+          </div>
+
+          <!-- scan confirm -->
+          <div class="app-scan-confirm" dir="rtl">تم العثور على المنتج</div>
+
+        </div><!-- /app-mockup-wrap -->
+
+        <!-- pills -->
+        <div class="transition-pills" id="bgPills">
+          <span class="pill active" data-bg="bg-color"       data-label="لون خلفية">🎨 لون</span>
+          <span class="pill"        data-bg="bg-image"       data-label="صورة ثابتة">🖼️ صورة</span>
+          <span class="pill"        data-bg="bg-slideshow"   data-label="ألبوم صور — Slideshow">🎞️ ألبوم صور</span>
+          <span class="pill"        data-bg="bg-video"       data-label="خلفية فيديو">🎬 فيديو</span>
+          <span class="pill"        data-bg="bg-album-video" data-label="ألبوم فيديوهات">📂 ألبوم فيديو</span>
         </div>
-        <div class="transition-pills" style="margin-top:16px;">
-          <span class="pill active">🎨 لون</span>
-          <span class="pill">🖼️ صورة</span>
-          <span class="pill">🎞️ ألبوم صور</span>
-          <span class="pill">🎬 فيديو</span>
-          <span class="pill">📂 ألبوم فيديو</span>
-        </div>
+
       </div>
 
       <div class="appear-content reveal">
@@ -1477,7 +1828,7 @@ footer span { color: var(--gold); }
         ابدأ باشتراك مجاني الآن، أو تواصل معنا مباشرةً لمعرفة الباقة المناسبة لحجم مؤسستك.
       </p>
       <div>
-        <a href="https://wa.me/201274096624" class="btn-primary" style="font-size:1.05rem; padding:15px 36px;">
+        <a href="#" class="btn-primary" style="font-size:1.05rem; padding:15px 36px;">
           📲 تواصل عبر واتساب
         </a>
       </div>
@@ -1512,60 +1863,168 @@ footer span { color: var(--gold); }
 <footer>
   <div class="container">
     <p>
-      <span>Price Scanner</span> v3.0.0 &nbsp;|&nbsp; جميع الحقوق محفوظة &copy; 2026
+      صُنع بـ ❤️ — <span>Price Scanner</span> v3.0.0 &nbsp;|&nbsp; جميع الحقوق محفوظة &copy; 2026
     </p>
   </div>
 </footer>
 
 <script>
-// Scroll reveal
+/* ── Scroll Reveal ── */
 const observer = new IntersectionObserver((entries) => {
   entries.forEach((entry, i) => {
-    if (entry.isIntersecting) {
-      setTimeout(() => entry.target.classList.add('visible'), i * 80);
-    }
+    if (entry.isIntersecting) setTimeout(() => entry.target.classList.add('visible'), i * 80);
   });
-}, { threshold: 0.12 });
-
+}, { threshold: 0.10 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-// Nav active state
+/* ── Nav Active ── */
 const sections = document.querySelectorAll('section[id]');
-const navLinks = document.querySelectorAll('.nav-links a');
-
+const navLinks  = document.querySelectorAll('.nav-links a');
 window.addEventListener('scroll', () => {
-  let current = '';
-  sections.forEach(s => {
-    if (window.scrollY >= s.offsetTop - 140) current = s.id;
-  });
-  navLinks.forEach(a => {
-    a.style.color = a.getAttribute('href') === '#' + current
-      ? 'var(--gold)' : '';
-  });
+  let cur = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 140) cur = s.id; });
+  navLinks.forEach(a => { a.style.color = a.getAttribute('href') === '#'+cur ? 'var(--gold)' : ''; });
 });
 
-// Pill toggle in appearance
-document.querySelectorAll('.pill').forEach(pill => {
+/* ══ SLIDESHOW ENGINE ══ */
+const slideIds   = ['slide-a','slide-b','slide-c','slide-d'];
+let   slideIdx   = 0;
+let   slideTimer = null;
+
+function runSlideshow() {
+  if (slideTimer) clearInterval(slideTimer);
+  slideIds.forEach(id => { const el = document.getElementById(id); if(el){ el.style.opacity='0'; el.style.zIndex='1'; } });
+  const first = document.getElementById(slideIds[0]);
+  if (first) { first.style.opacity='1'; first.style.zIndex='2'; }
+  slideIdx = 0;
+  slideTimer = setInterval(() => {
+    const prev = document.getElementById(slideIds[slideIdx]);
+    slideIdx   = (slideIdx + 1) % slideIds.length;
+    const next = document.getElementById(slideIds[slideIdx]);
+    if (!prev || !next) return;
+    next.style.zIndex  = '3';
+    next.style.opacity = '1';
+    setTimeout(() => {
+      prev.style.opacity = '0';
+      prev.style.zIndex  = '1';
+    }, 700);
+  }, 2800);
+}
+
+function stopSlideshow() {
+  if (slideTimer) { clearInterval(slideTimer); slideTimer = null; }
+}
+
+/* ══ VIDEO ALBUM ENGINE ══ */
+const vfIds    = ['vf-0','vf-1','vf-2','vf-3'];
+let   vfIdx    = 0;
+let   vfTimer  = null;
+
+function runVideoAlbum() {
+  if (vfTimer) clearInterval(vfTimer);
+  vfIds.forEach(id => { const el = document.getElementById(id); if(el){ el.style.opacity='0'; el.style.zIndex='1'; } });
+  const first = document.getElementById(vfIds[0]);
+  if (first) { first.style.opacity='1'; first.style.zIndex='2'; }
+  vfIdx  = 0;
+  vfTimer = setInterval(() => {
+    const prev = document.getElementById(vfIds[vfIdx]);
+    vfIdx = (vfIdx + 1) % vfIds.length;
+    const next = document.getElementById(vfIds[vfIdx]);
+    if (!prev || !next) return;
+    next.style.zIndex  = '3';
+    next.style.opacity = '1';
+    setTimeout(() => { prev.style.opacity='0'; prev.style.zIndex='1'; }, 500);
+  }, 2200);
+}
+
+function stopVideoAlbum() {
+  if (vfTimer) { clearInterval(vfTimer); vfTimer = null; }
+}
+
+/* ══ PILL SWITCHER ══ */
+const pills   = document.querySelectorAll('#bgPills .pill');
+const bgLabel = document.getElementById('bgLabel');
+let   labelTimer;
+
+pills.forEach(pill => {
   pill.addEventListener('click', () => {
-    pill.closest('.transition-pills').querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+    pills.forEach(p => p.classList.remove('active'));
     pill.classList.add('active');
+
+    /* stop any running animations */
+    stopSlideshow();
+    stopVideoAlbum();
+
+    /* hide all backgrounds */
+    document.querySelectorAll('.app-bg').forEach(b => b.classList.remove('active'));
+
+    const targetId = pill.dataset.bg;
+    const targetBg = document.getElementById(targetId);
+    if (targetBg) targetBg.classList.add('active');
+
+    /* start engines if needed */
+    if (targetId === 'bg-slideshow')   runSlideshow();
+    if (targetId === 'bg-album-video') runVideoAlbum();
+
+    /* floating label */
+    bgLabel.textContent = pill.dataset.label || pill.textContent.trim();
+    bgLabel.classList.add('show');
+    clearTimeout(labelTimer);
+    labelTimer = setTimeout(() => bgLabel.classList.remove('show'), 2200);
   });
 });
 
-// Typewriter in search bar
-const codes = ['6221155000115', '3700051001248', '8001841204013', '5010123010006'];
+/* ── Mock Clock ── */
+function updateMockClock() {
+  const now = new Date();
+  let h = now.getHours(), m = now.getMinutes();
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  const el = document.getElementById('mockClock');
+  if (el) el.textContent = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ' ' + ampm;
+}
+updateMockClock();
+setInterval(updateMockClock, 30000);
+
+/* ── Typewriter + Mockup Product Sync ── */
+const scanData = [
+  { code:'6221155000115', product:'باراسيتامول 500 مجم × 20', price:'32.50' },
+  { code:'34871',         product:'AVIL 2CC 6AMP',              price:'57.00' },
+  { code:'8001841204013', product:'شامبو بانتين 400مل',        price:'89.00' },
+  { code:'5010123010006', product:'فيتامين C 1000mg',           price:'45.00' },
+];
 let ci = 0;
 const input = document.querySelector('.search-bar input');
+
+function fadeField(id, newVal) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.transition = 'opacity .2s';
+  el.style.opacity = '0';
+  setTimeout(() => {
+    el.textContent = newVal;
+    el.style.opacity = '1';
+  }, 220);
+}
+
+function typeCode(str, el, cb) {
+  el.value = ''; let j = 0;
+  const t = setInterval(() => {
+    el.value += str[j++];
+    if (j >= str.length) { clearInterval(t); if (cb) setTimeout(cb, 500); }
+  }, 70);
+}
+
 if (input) {
   setInterval(() => {
-    ci = (ci + 1) % codes.length;
-    input.value = '';
-    let j = 0;
-    const type = setInterval(() => {
-      input.value += codes[ci][j++];
-      if (j >= codes[ci].length) clearInterval(type);
-    }, 80);
-  }, 3500);
+    ci = (ci + 1) % scanData.length;
+    const d = scanData[ci];
+    typeCode(d.code, input, () => {
+      fadeField('mockCode',    d.code);
+      fadeField('mockProduct', d.product);
+      fadeField('mockPrice',   d.price);
+    });
+  }, 3800);
 }
 </script>
 
