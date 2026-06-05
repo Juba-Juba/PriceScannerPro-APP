@@ -807,6 +807,7 @@ h1 .accent2 { color: var(--cyan); }
 .badge-warn { background: rgba(232,168,76,.15); color: var(--gold); border-radius:5px; padding:2px 8px; font-size:.72rem; font-weight:700; }
 .badge-exp  { background: rgba(255,80,80,.15); color: #ff6b6b; border-radius:5px; padding:2px 8px; font-size:.72rem; font-weight:700; }
 .badge-ok   { background: rgba(39,201,63,.12); color: #27c93f; border-radius:5px; padding:2px 8px; font-size:.72rem; font-weight:700; }
+.badge-Count   { background: rgba(39,201,63,.12); color: #27c93f; border-radius:5px; padding:2px 8px; font-size:.72rem; font-weight:700; }
 
 .expiry-features { display: flex; flex-direction: column; gap: 20px; }
 .expiry-feature {
@@ -1059,6 +1060,124 @@ footer span { color: var(--gold); }
   .container { padding: 0 20px; }
   .hero-stats { gap: 20px; }
 }
+
+.first-offers { margin-top: 30px; }
+.bundle-offers-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 16px;
+}
+.bundle-offer {
+  padding: 24px;
+  border: 1px solid rgba(232,168,76,.26);
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, rgba(232,168,76,.10), rgba(34,211,238,.06));
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  justify-content: space-between;
+}
+.bundle-copy h3 { margin: 10px 0 8px; font-size: 1.25rem; color: var(--text); line-height: 1.45; }
+.bundle-copy p, .bundle-items { color: var(--text2); line-height: 1.8; font-size: .95rem; }
+.bundle-items { margin-top: 10px; }
+.bundle-price-box {
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: var(--radius-sm);
+  padding: 20px;
+  background: rgba(0,0,0,.18);
+  text-align: center;
+}
+.bundle-price { font-size: 2rem; font-weight: 800; color: var(--gold); }
+.bundle-price span { font-size: 1rem; color: var(--text2); }
+.bundle-old { margin-top: 8px; color: var(--text3); text-decoration: line-through; }
+.bundle-discount { color: var(--cyan); font-weight: 700; }
+.bundle-discount1 { color: var(--cyan); font-weight: 500; }
+.featured-bundle { border-color: rgba(34,211,238,.32); background: linear-gradient(135deg, rgba(34,211,238,.10), rgba(232,168,76,.07)); }
+.lifetime-bundle { border-color: rgba(167,139,250,.32); background: linear-gradient(135deg, rgba(167,139,250,.12), rgba(232,168,76,.07)); }
+#new-details .features-grid {
+  gap: 0;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+#new-details .feature-card {
+  border: 0;
+  border-inline-end: 1px solid rgba(255,255,255,.08);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  border-radius: 0;
+}
+@media (max-width: 1000px) {
+  .bundle-offers-grid { grid-template-columns: 1fr; }
+}
+
+/* Floating Language Switcher */
+.lang-float {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  z-index: 250;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: flex-start;
+  gap: 10px;
+}
+.lang-toggle {
+  width: 58px;
+  height: 58px;
+  border: 1px solid rgba(232,168,76,.36);
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  color: #09090f;
+  font-weight: 900;
+  font-size: .92rem;
+  cursor: pointer;
+  box-shadow: 0 16px 40px rgba(0,0,0,.38), 0 0 28px rgba(232,168,76,.22);
+  display: grid;
+  place-items: center;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.lang-toggle:hover { transform: translateY(-2px); box-shadow: 0 20px 48px rgba(0,0,0,.45), 0 0 34px rgba(232,168,76,.30); }
+.lang-menu {
+  min-width: 148px;
+  padding: 8px;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 14px;
+  background: rgba(13,13,24,.92);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 18px 50px rgba(0,0,0,.34);
+  opacity: 0;
+  transform: translateY(8px) scale(.96);
+  pointer-events: none;
+  transition: opacity .18s ease, transform .18s ease;
+}
+.lang-float.open .lang-menu { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+.lang-option {
+  width: 100%;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text2);
+  cursor: pointer;
+  padding: 9px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: inherit;
+  font-size: .86rem;
+  transition: background .16s ease, color .16s ease;
+}
+.lang-option:hover, .lang-option.active { background: rgba(232,168,76,.12); color: var(--gold2); }
+.lang-option span:last-child { font-family: 'JetBrains Mono', monospace; font-weight: 700; }
+html[dir="ltr"] body { font-family: 'Cairo', 'Tajawal', sans-serif; }
+html[dir="ltr"] .hero-grid, html[dir="ltr"] .appear-grid, html[dir="ltr"] .expiry-layout, html[dir="ltr"] .partner-grid { direction: ltr; }
+html[dir="ltr"] .section-header, html[dir="ltr"] .hero-content, html[dir="ltr"] .bundle-copy, html[dir="ltr"] footer { direction: ltr; text-align: left; }
+html[dir="ltr"] .nav-links { direction: ltr; }
+@media (max-width: 700px) {
+  .lang-float { left: 14px; bottom: 14px; }
+  .lang-toggle { width: 52px; height: 52px; }
+}
 </style>
 </head>
 <body>
@@ -1256,8 +1375,8 @@ footer span { color: var(--gold); }
 
       <div class="feature-cell">
         <span class="feature-icon">⏱️</span>
-        <div class="feature-title">تفريغ تلقائي للبحث</div>
-        <div class="feature-desc">يُفرّغ مربع البحث تلقائيًا بعد ثانيتين من عدم الضغط على Enter، جاهزًا للمسحة التالية فورًا.</div>
+        <div class="feature-title">جاهزية تلقائية للمسحة التالية</div>
+        <div class="feature-desc">يعيد تجهيز مربع البحث تلقائيًا عند انتهاء الإدخال غير المكتمل، ليبقى البرنامج جاهزًا للمسحة التالية بدون تعطيل التشغيل.</div>
       </div>
 
       <div class="feature-cell">
@@ -1627,7 +1746,7 @@ footer span { color: var(--gold); }
 
     <div class="lang-grid reveal">
       <div class="lang-card">
-        <div class="lang-flag">🇪🇬</div>
+        <div class="lang-flag">AR</div>
         <div class="lang-name">العربية</div>
         <div class="lang-code">AR</div>
         <div class="lang-dir">← الاتجاه من اليمين لليسار (RTL)</div>
@@ -1679,18 +1798,13 @@ footer span { color: var(--gold); }
   <div class="container">
     <div class="section-header reveal">
       <div class="section-tag">نظام الشراكة</div>
-      <h2 class="section-title">ثلاثة مستويات — تحكم كامل</h2>
-      <p class="section-desc">نظام صلاحيات هرمي يضمن أن يرى كل شخص ما يخصه فقط.</p>
+      <h2 class="section-title">مستويان واضحان للشراكة والتشغيل</h2>
+      <p class="section-desc">نظام صلاحيات عملي يفصل بين دور المتعاون ودور المستخدم، بحيث تظهر لكل طرف الإعدادات المناسبة له فقط.</p>
     </div>
 
     <div class="partner-grid">
 
       <div class="partner-levels reveal">
-        <div class="level-card dev">
-          <div class="level-badge dev">المطور</div>
-          <div class="level-title" style="margin-top:8px">مستوى المطور 🛠️</div>
-          <div class="level-desc">وصول كامل لجميع الإعدادات بما فيها تبويب المطور المحمي — يتحكم في باسووردات جميع المستويات.</div>
-        </div>
         <div class="level-card partner">
           <div class="level-badge partner">المتعاون</div>
           <div class="level-title" style="margin-top:8px">مستوى المتعاون 🤝</div>
@@ -1709,13 +1823,6 @@ footer span { color: var(--gold); }
           <div>
             <div class="pf-item-title">هوية مزدوجة في الشريط العلوي</div>
             <div class="pf-item-desc">اسم المؤسسة على اليمين، اسم الشريك المتعاون على اليسار — تخصيص كامل من تبويب الشريك.</div>
-          </div>
-        </div>
-        <div class="pf-item">
-          <span class="pf-item-icon">🔒</span>
-          <div>
-            <div class="pf-item-title">تبويب المطور بكلمة سر خاصة</div>
-            <div class="pf-item-desc">كل تعديل في تبويب المطور يتطلب إدخال كلمة السر من جديد — حماية مزدوجة من الوصول غير المصرح.</div>
           </div>
         </div>
         <div class="pf-item">
@@ -1753,7 +1860,7 @@ footer span { color: var(--gold); }
     <div class="section-header reveal">
       <div class="section-tag">الاشتراكات</div>
       <h2 class="section-title">باقة لكل احتياج</h2>
-      <p class="section-desc">ابدأ مجانًا وطوّر اشتراكك مع نمو أعمالك. كل باقة تُفعّل بباركود يرسله المطور مباشرةً.</p>
+      <p class="section-desc">ابدأ مجانًا، ثم اختر رصيد المسحات المناسب لحجم العمل. كل باقة تُفعّل بسيريال أو باركود تفعيل، مع سجل واضح للرصيد والاستهلاك.</p>
     </div>
 
     <div class="pricing-grid reveal">
@@ -1761,43 +1868,109 @@ footer span { color: var(--gold); }
         <div class="plan-name">بسيط</div>
         <div class="plan-scans">20K</div>
         <div class="plan-scans-unit">مسحة</div>
-        <div class="plan-price">2,000</div>
+        <div class="plan-price">3,000</div>
         <div class="plan-currency">جنيه مصري</div>
+        <div style="margin-top:12px;font-size:.78rem;color:var(--text2);line-height:1.7">50 عملية / اليوم = يكفي 1 سنة + 1 شهر<br>≈ 250ج.م / شهر</div><br>
+	<div class="badge-Count" style="display:flex;justify-content:center;align-items:center;width:fit-content;margin:auto;">≈ 15 قرش / مسحة</div>
       </div>
+	
       <div class="price-card">
         <div class="plan-name">متوسط</div>
         <div class="plan-scans">50K</div>
         <div class="plan-scans-unit">مسحة</div>
-        <div class="plan-price">4,000</div>
+        <div class="plan-price">6,000</div>
         <div class="plan-currency">جنيه مصري</div>
+        <div style="margin-top:12px;font-size:.78rem;color:var(--text2);line-height:1.7">100 عملية / اليوم = يكفي 1 سنة + 4 شهر<br>≈ 375ج.م / شهر</div><br>
+	<div class="badge-Count" style="display:flex;justify-content:center;align-items:center;width:fit-content;margin:auto;">≈ 12 قرش / مسحة</div>
       </div>
       <div class="price-card featured">
-        <div class="featured-label"><span>⭐ الأشهر</span></div>
+<div class="featured-label" style="direction:ltr;align-self:flex-end;">
+    <span>⭐ عرض أقوى</span>
+</div>
         <div class="plan-name">مرتفع</div>
         <div class="plan-scans">120K</div>
         <div class="plan-scans-unit">مسحة</div>
-        <div class="plan-price">8,000</div>
-        <div class="plan-currency">جنيه مصري</div>
+        <div class="plan-price">10,000</div>
+        <div class="plan-currency"> جنيه مصري &nbsp;&nbsp;<span style="text-decoration:line-through">بدلًا من 12,000</span></div>
+	<span class="bundle-discount1">&nbsp;&nbsp;خصم 16%</span>
+        <div style="margin-top:12px;font-size:.78rem;color:var(--text2);line-height:1.7">200 عملية / اليوم = يكفي 1 سنة + 7 شهر<br>≈ 525ج.م / شهر بدلًا من 630ج.م</div><br>
+	<div class="badge-Count" style="display:flex;justify-content:center;align-items:center;width:fit-content;margin:auto;">≈ 8 قروش / مسحة</div>
       </div>
       <div class="price-card">
         <div class="plan-name">متقدم</div>
         <div class="plan-scans">250K</div>
         <div class="plan-scans-unit">مسحة</div>
-        <div class="plan-price">14,000</div>
+        <div class="plan-price">20,000</div>
         <div class="plan-currency">جنيه مصري</div>
+        <div style="margin-top:12px;font-size:.78rem;color:var(--text2);line-height:1.7">300 عملية / اليوم = يكفي 2 سنة + 3 شهر<br>≈ 740ج.م / شهر</div><br>
+	<div class="badge-Count" style="display:flex;justify-content:center;align-items:center;width:fit-content;margin:auto;">≈ 8 قروش / مسحة</div>
       </div>
       <div class="price-card" style="border-color: rgba(167,139,250,.3); background: linear-gradient(160deg,var(--surface),rgba(167,139,250,.06))">
         <div class="plan-name" style="color:#a78bfa">مدى الحياة</div>
         <div class="plan-scans" style="color:#a78bfa">∞</div>
         <div class="plan-scans-unit">غير محدود</div>
-        <div class="plan-price">20,000</div>
+        <div class="plan-price">50,000</div>
         <div class="plan-currency">جنيه مصري — مرة واحدة</div>
+        <div style="margin-top:12px;font-size:.78rem;color:var(--text2);line-height:1.7">10,000 عملية / اليوم = يكفي &gt; 250,000,000 سنة<br>≈ 0.00001ج.م / شهر</div><br>
+	<div class="badge-Count" style="display:flex;justify-content:center;align-items:center;width:fit-content;margin:auto;">≈ 0 قرش / مسحة</div>
       </div>
     </div>
 
+    <div class="first-offers reveal">
+      <div class="section-tag">عروض أول مرة</div>
+      <div class="bundle-offers-grid">
+        <div class="bundle-offer">
+          <div class="bundle-copy">
+            <div class="bundle-discount">خصم 25% على الجهاز + 16% على الاشتراك</div>
+            <h3>جهاز كامل + اشتراك مرتفع</h3>
+            <p>جهاز كمبيوتر كامل ومجهز بنظام التشغيل المناسب وبمشتملاته، مع اشتراك البرنامج بالنظام المرتفع 120,000 مسحة.</p>
+            <div class="bundle-items">يشمل: كابل إنترنت 10 متر + ماوس + كيبورد + باركود سكانر + حامل حائط + نظام الاشتراك المرتفع 120,000 مسحة.</div>
+          </div>
+          <div class="bundle-price-box">
+            <div class="bundle-price">17,500 <span>جنيه</span></div>
+            <div class="bundle-old">بدلاً من 22,000 جنيه</div>
+          </div>
+	<div class="badge-Count" style="display:flex;justify-content:center;align-items:center;width:fit-content;margin:auto;">
+   ≈ 8 قروش / مسحة
+	</div>
+        </div>
+
+        <div class="bundle-offer featured-bundle">
+          <div class="bundle-copy">
+            <div class="bundle-discount">خصم 50% على الجهاز</div>
+            <h3>جهاز كامل + اشتراك متقدم</h3>
+            <p>جهاز كمبيوتر كامل ومجهز بنظام التشغيل المناسب وبمشتملاته، مع اشتراك البرنامج بالنظام المتقدم 250,000 مسحة.</p>
+            <div class="bundle-items">يشمل: كابل إنترنت 10 متر + ماوس + كيبورد + باركود سكانر + حامل حائط + نظام الاشتراك المتقدم 250,000 مسحة.</div>
+          </div>
+          <div class="bundle-price-box">
+            <div class="bundle-price">25,000 <span>جنيه</span></div>
+            <div class="bundle-old">بدلاً من 30,000 جنيه</div>
+          </div>
+	<div class="badge-Count" style="display:flex;justify-content:center;align-items:center;width:fit-content;margin:auto;">
+   ≈ 10 قروش / مسحة
+	</div>
+        </div>
+
+        <div class="bundle-offer lifetime-bundle">
+          <div class="bundle-copy">
+            <div class="bundle-discount">خصم 100% على الجهاز</div>
+            <h3>جهاز كامل + اشتراك مدى الحياة</h3>
+            <p>جهاز كمبيوتر كامل ومجهز بنظام التشغيل المناسب وبمشتملاته، مع اشتراك البرنامج بنظام المسحات مدى الحياة (عدد مسحات لا نهائي).</p>
+            <div class="bundle-items">يشمل: كابل إنترنت 10 متر + ماوس + كيبورد + باركود سكانر + حامل حائط + نظام اشتراك مدى الحياة.</div>
+          </div>
+          <div class="bundle-price-box">
+            <div class="bundle-price">50,000 <span>جنيه</span></div>
+            <div class="bundle-old">بدلاً من 60,000 جنيه</div>
+          </div>
+	<div class="badge-Count" style="display:flex;justify-content:center;align-items:center;width:fit-content;margin:auto;">
+   ≈ 0 قروش / مسحة
+	</div>
+        </div>
+      </div>
+    </div>
     <div class="free-plans reveal" style="margin-top:32px;">
       <div class="free-card">
-        <div class="plan-name">تجريبي</div>
+        <div class="plan-name">مؤقت</div>
         <div class="plan-scans">10</div>
         <div class="plan-scans-unit" style="font-size:.78rem;color:var(--text3);">مسحات — مجاني</div>
       </div>
@@ -1812,7 +1985,24 @@ footer span { color: var(--gold); }
         <div class="plan-scans-unit" style="font-size:.78rem;color:var(--text3);">مسحة — مجاني</div>
       </div>
     </div>
+  </div>
+</section>
 
+<section id="new-details" style="padding:90px 0;">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-tag">تفاصيل أحدث</div>
+      <h2 class="section-title">تحكم أعمق، أمان أعلى، وتجربة عرض أدق</h2>
+      <p class="section-desc">تم تعزيز البرنامج بتفاصيل عملية تناسب التشغيل اليومي داخل الصيدليات والمتاجر والمؤسسات.</p>
+    </div>
+    <div class="features-grid reveal">
+      <div class="feature-card" style="padding:20px"><div class="feature-icon">🔤</div><h3>خطوط مدمجة لكل لغة</h3><p>اختيار خط عربي وإنجليزي وفرنسي لاسم الصنف، مع تطبيق تلقائي على أجزاء الاسم المختلطة مثل Abimol Extra سعر جديد.</p></div>
+      <div class="feature-card" style="padding:20px"><div class="feature-icon">🔐</div><h3>تشفير كلمات المرور</h3><p>حفظ كلمات مرور Excel وقواعد البيانات والمتعاون وبيانات API بشكل مشفر محليًا باستخدام حماية ويندوز للمستخدم الحالي.</p></div>
+      <div class="feature-card" style="padding:20px"><div class="feature-icon">📦</div><h3>عبوات وأجزاء وتقسيم</h3><p>تجميع الأجزاء من كل الصفوف وتحويلها لعبوات حسب التقسيم، مع عرض الكمية النهائية بصورة واضحة.</p></div>
+      <div class="feature-card" style="padding:20px"><div class="feature-icon">📅</div><h3>صلاحيات بكميات وشروط</h3><p>عرض تاريخ الصلاحية بصيغة شهر/سنة، إخفاء التواريخ بدون رصيد، ودعم شرط ظهور الصلاحية في Excel وقواعد البيانات.</p></div>
+      <div class="feature-card" style="padding:20px"><div class="feature-icon">🧪</div><h3>تشخيص السيريالات</h3><p>تبويب المطور يعرض أماكن حفظ السيريال، هل نجح الحفظ، وأسباب الفشل عند وجود مشكلة في القراءة أو الكتابة.</p></div>
+      <div class="feature-card" style="padding:20px"><div class="feature-icon">⚡</div><h3>إدارة طاقة موحدة</h3><p>تشغيل البرنامج مع الويندوز، منع إطفاء الشاشة، ومنع وضع النوم من نفس المصدر في المظهر والمتعاون والمطور.</p></div>
+    </div>
   </div>
 </section>
 
@@ -1868,7 +2058,31 @@ footer span { color: var(--gold); }
   </div>
 </footer>
 
+<div class="lang-float" id="langFloat">
+  <button class="lang-toggle" id="langToggle" type="button" aria-label="Change language">AR</button>
+  <div class="lang-menu" role="menu" aria-label="Language selector">
+    <button class="lang-option active" type="button" data-lang="ar"><span>العربية</span><span>AR</span></button>
+    <button class="lang-option" type="button" data-lang="en"><span>English</span><span>EN</span></button>
+    <button class="lang-option" type="button" data-lang="fr"><span>Français</span><span>FR</span></button>
+  </div>
+</div>
 <script>
+/* ── Language menu shell ── */
+try { localStorage.removeItem('priceScannerSiteLang'); } catch { }
+const langFloat = document.getElementById('langFloat');
+const langToggle = document.getElementById('langToggle');
+if (langToggle && langFloat) {
+  langToggle.addEventListener('click', () => langFloat.classList.toggle('open'));
+  document.querySelectorAll('.lang-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.lang-option').forEach(x => x.classList.remove('active'));
+      btn.classList.add('active');
+      langToggle.textContent = (btn.dataset.lang || 'ar').toUpperCase();
+      langFloat.classList.remove('open');
+    });
+  });
+  document.addEventListener('click', (e) => { if (!langFloat.contains(e.target)) langFloat.classList.remove('open'); });
+}
 /* ── Scroll Reveal ── */
 const observer = new IntersectionObserver((entries) => {
   entries.forEach((entry, i) => {
@@ -2030,3 +2244,9 @@ if (input) {
 
 </body>
 </html>
+
+
+
+
+
+
