@@ -2053,7 +2053,7 @@ html[dir="ltr"] .nav-links { direction: ltr; }
 <footer>
   <div class="container">
     <p>
-      <span>Price Scanner</span> v3.0.0 &nbsp;|&nbsp; جميع الحقوق محفوظة &copy; 2026
+      صُنع بـ ❤️ — <span>Price Scanner</span> v3.0.0 &nbsp;|&nbsp; جميع الحقوق محفوظة &copy; 2026
     </p>
   </div>
 </footer>
@@ -2067,22 +2067,232 @@ html[dir="ltr"] .nav-links { direction: ltr; }
   </div>
 </div>
 <script>
-/* ── Language menu shell ── */
-try { localStorage.removeItem('priceScannerSiteLang'); } catch { }
+/* ── Language runtime, selector-safe ── */
+const langMeta = {
+  ar: { label: 'AR', dir: 'rtl', title: 'Price Scanner — نظام قراءة الأسعار الذكي' },
+  en: { label: 'EN', dir: 'ltr', title: 'Price Scanner — Smart Price Reading System' },
+  fr: { label: 'FR', dir: 'ltr', title: 'Price Scanner — Système intelligent de lecture des prix' }
+};
+
+const langText = {
+  ar: {
+    '.nav-links a[href="#data-sources"]': 'مصادر البيانات',
+    '.nav-links a[href="#features"]': 'المميزات',
+    '.nav-links a[href="#appearance"]': 'المظهر',
+    '.nav-links a[href="#expiry"]': 'الصلاحيات',
+    '.nav-links a[href="#pricing"]': 'الأسعار',
+    '.nav-links a[href="#cta"]': 'تواصل معنا',
+    '.hero-badge': 'الإصدار 3.0.0 — الآن متاح',
+    '.hero-content h1': 'نظام قراءة الأسعار<br><span class="accent">الأذكى</span> لبيئة عملك',
+    '.hero-desc': 'امسح. اعرض. استفد. — نظام متكامل يربط مستودعك أو صيدليتك أو متجرك بباركود واحد يُظهر كل شيء: السعر، الكمية، الصلاحية، في ثانية واحدة.',
+    '.hero-actions .btn-primary': '🚀 ابدأ الآن',
+    '.hero-actions .btn-secondary': 'استعرض المميزات',
+    '.stat-item:nth-child(1) .stat-label': 'قواعد بيانات مدعومة',
+    '.stat-item:nth-child(2) .stat-label': 'لغات للواجهة',
+    '.stat-item:nth-child(3) .stat-label': 'عملات جاهزة',
+    '#data-sources .section-tag': 'مصادر البيانات',
+    '#data-sources .section-title': 'بياناتك من أي مصدر — بضغطة واحدة',
+    '#data-sources .section-desc': 'يتصل البرنامج بمصدر بياناتك مباشرةً ويعرض النتائج لحظيًا، ويمكن التبديل بين المصادر دون إعادة تشغيل.',
+    '#features .section-tag': 'المميزات',
+    '#features .section-title': 'كل ما تحتاجه في منظومة واحدة',
+    '#features .section-desc': 'مميزات مدروسة لكل احتياجات بيئة العمل التجارية والصيدلانية والمستودعات.',
+    '#appearance .appear-content > .section-tag': 'تخصيص المظهر',
+    '#appearance .appear-content > h2': 'شاشتك — هويتك التجارية',
+    '#appearance .appear-content > p': 'حوّل شاشة البحث إلى واجهة احترافية تعكس هوية مؤسستك بالكامل، مع تحكم دقيق في كل تفصيلة.',
+    '#expiry .section-tag': 'الصلاحيات والكميات',
+    '#expiry .section-title': 'إدارة المخزون بدقة مطلقة',
+    '#expiry .section-desc': 'نظام متكامل لتتبع تواريخ الصلاحية وحساب الكميات الفعلية لحظيًا.',
+    '#multilang .section-tag': 'التعددية',
+    '#multilang .section-title': 'يتكلم لغتك ويعرض عملتك',
+    '#multilang .section-desc': 'دعم كامل لثلاث لغات وخمس عملات — البرنامج يتكيف مع سوقك المحلي.',
+    '#partner .section-tag': 'نظام الشراكة',
+    '#partner .section-title': 'مستويان واضحان للشراكة والتشغيل',
+    '#partner .section-desc': 'نظام صلاحيات عملي يفصل بين دور المتعاون ودور المستخدم، بحيث تظهر لكل طرف الإعدادات المناسبة له فقط.',
+    '#pricing > .container > .section-header .section-tag': 'الاشتراكات',
+    '#pricing > .container > .section-header .section-title': 'باقة لكل احتياج',
+    '#pricing > .container > .section-header .section-desc': 'ابدأ مجانًا، ثم اختر رصيد المسحات المناسب لحجم العمل. كل باقة تُفعّل بسيريال أو باركود تفعيل، مع سجل واضح للرصيد والاستهلاك.',
+    '.first-offers > .section-tag': 'عروض أول مرة',
+    '.bundle-offer:nth-child(1) .bundle-discount': 'خصم 25% على الجهاز + 16% على الاشتراك',
+    '.bundle-offer:nth-child(1) h3': 'باندل جهاز كامل + اشتراك مرتفع',
+    '.bundle-offer:nth-child(1) p': 'جهاز كمبيوتر كامل ومجهز بنظام التشغيل المناسب وبمشتملاته، مع اشتراك البرنامج بالنظام المرتفع 120 ألف مسحة.',
+    '.bundle-offer:nth-child(1) .bundle-items': 'يشمل: كابل إنترنت 10 متر + ماوس + كيبورد + باركود سكانر + حامل حائط + اشتراك مرتفع 120K.',
+    '.bundle-offer:nth-child(1) .bundle-old': 'بدلاً من 22,000 جنيه',
+    '.bundle-offer:nth-child(2) .bundle-discount': 'خصم 50% على الجهاز',
+    '.bundle-offer:nth-child(2) h3': 'باندل جهاز كامل + اشتراك متقدم',
+    '.bundle-offer:nth-child(2) p': 'جهاز كمبيوتر كامل ومجهز بنظام التشغيل المناسب وبمشتملاته، مع اشتراك البرنامج بالنظام المتقدم 250 ألف مسحة.',
+    '.bundle-offer:nth-child(2) .bundle-items': 'يشمل: كابل إنترنت 10 متر + ماوس + كيبورد + باركود سكانر + حامل حائط + اشتراك متقدم 250K.',
+    '.bundle-offer:nth-child(2) .bundle-old': 'بدلاً من 30,000 جنيه',
+    '.bundle-offer:nth-child(3) .bundle-discount': 'خصم 100% على الجهاز',
+    '.bundle-offer:nth-child(3) h3': 'باندل جهاز كامل + اشتراك مدى الحياة',
+    '.bundle-offer:nth-child(3) p': 'جهاز كمبيوتر كامل ومجهز بنظام التشغيل المناسب وبمشتملاته، مع اشتراك البرنامج بنظام المسحات مدى الحياة.',
+    '.bundle-offer:nth-child(3) .bundle-items': 'يشمل: كابل إنترنت 10 متر + ماوس + كيبورد + باركود سكانر + حامل حائط + عدد مسحات لا نهائي.',
+    '.bundle-offer:nth-child(3) .bundle-old': 'بدلاً من 60,000 جنيه',
+    '#new-details .section-tag': 'تفاصيل أحدث',
+    '#new-details .section-title': 'تحكم أعمق، أمان أعلى، وتجربة عرض أدق',
+    '#new-details .section-desc': 'تم تعزيز البرنامج بتفاصيل عملية تناسب التشغيل اليومي داخل الصيدليات والمتاجر والمؤسسات.',
+    '#cta .section-tag': 'تواصل معنا',
+    '#cta .cta-title': 'جاهز للبدء؟<br><span style="color:var(--gold)">نحن هنا معك.</span>',
+    '#cta .cta-desc': 'ابدأ باشتراك مجاني الآن، أو تواصل معنا مباشرةً لمعرفة الباقة المناسبة لحجم مؤسستك.',
+    '#cta .btn-primary': '📲 تواصل عبر واتساب',
+    'footer p': 'صُنع بـ ❤️ — <span>Price Scanner</span> v3.0.0 &nbsp;|&nbsp; جميع الحقوق محفوظة &copy; 2026'
+  },
+  en: {
+    '.nav-links a[href="#data-sources"]': 'Data sources',
+    '.nav-links a[href="#features"]': 'Features',
+    '.nav-links a[href="#appearance"]': 'Appearance',
+    '.nav-links a[href="#expiry"]': 'Expiry',
+    '.nav-links a[href="#pricing"]': 'Pricing',
+    '.nav-links a[href="#cta"]': 'Contact us',
+    '.hero-badge': 'Version 3.0.0 — available now',
+    '.hero-content h1': 'The <span class="accent">smarter</span><br>price reading system for your business',
+    '.hero-desc': 'Scan. Display. Sell smarter. A complete system that connects your warehouse, pharmacy, or store to one barcode that shows price, quantity, and expiry in one second.',
+    '.hero-actions .btn-primary': '🚀 Start now',
+    '.hero-actions .btn-secondary': 'Explore features',
+    '.stat-item:nth-child(1) .stat-label': 'Supported databases',
+    '.stat-item:nth-child(2) .stat-label': 'Interface languages',
+    '.stat-item:nth-child(3) .stat-label': 'Ready currencies',
+    '#data-sources .section-tag': 'Data sources',
+    '#data-sources .section-title': 'Your data from any source — in one click',
+    '#data-sources .section-desc': 'Connect directly to your data source and show results instantly, with switching between sources without restarting.',
+    '#features .section-tag': 'Features',
+    '#features .section-title': 'Everything you need in one system',
+    '#features .section-desc': 'Purpose-built features for retail, pharmacy, warehouse, and institutional workflows.',
+    '#appearance .appear-content > .section-tag': 'Appearance customization',
+    '#appearance .appear-content > h2': 'Your screen — your brand identity',
+    '#appearance .appear-content > p': 'Turn the search screen into a professional branded interface with precise control over every detail.',
+    '#expiry .section-tag': 'Expiry and quantity',
+    '#expiry .section-title': 'Accurate inventory control',
+    '#expiry .section-desc': 'A complete system for tracking expiry dates and calculating real quantities instantly.',
+    '#multilang .section-tag': 'Multilingual',
+    '#multilang .section-title': 'Speaks your language and shows your currency',
+    '#multilang .section-desc': 'Full support for three languages and five currencies, adapting to your local market.',
+    '#partner .section-tag': 'Partnership system',
+    '#partner .section-title': 'Two clear levels for partnership and operation',
+    '#partner .section-desc': 'A practical permission system separating partner and user roles so each side sees only relevant settings.',
+    '#pricing > .container > .section-header .section-tag': 'Subscriptions',
+    '#pricing > .container > .section-header .section-title': 'A plan for every need',
+    '#pricing > .container > .section-header .section-desc': 'Start free, then choose the scan balance that matches your workload. Each plan activates by serial or barcode with clear usage history.',
+    '.first-offers > .section-tag': 'First-time offers',
+    '.bundle-offer:nth-child(1) .bundle-discount': '25% off the computer + 16% off the subscription',
+    '.bundle-offer:nth-child(1) h3': 'Full computer bundle + High plan',
+    '.bundle-offer:nth-child(1) p': 'A complete computer prepared with the suitable operating system and accessories, plus the High plan with 120K scans.',
+    '.bundle-offer:nth-child(1) .bundle-items': 'Includes: 10m Ethernet cable + mouse + keyboard + barcode scanner + wall holder + High 120K plan.',
+    '.bundle-offer:nth-child(1) .bundle-old': 'Instead of EGP 22,000',
+    '.bundle-offer:nth-child(2) .bundle-discount': '50% off the computer',
+    '.bundle-offer:nth-child(2) h3': 'Full computer bundle + Advanced plan',
+    '.bundle-offer:nth-child(2) p': 'A complete computer prepared with the suitable operating system and accessories, plus the Advanced plan with 250K scans.',
+    '.bundle-offer:nth-child(2) .bundle-items': 'Includes: 10m Ethernet cable + mouse + keyboard + barcode scanner + wall holder + Advanced 250K plan.',
+    '.bundle-offer:nth-child(2) .bundle-old': 'Instead of EGP 30,000',
+    '.bundle-offer:nth-child(3) .bundle-discount': '100% off the computer',
+    '.bundle-offer:nth-child(3) h3': 'Full computer bundle + Lifetime plan',
+    '.bundle-offer:nth-child(3) p': 'A complete computer prepared with the suitable operating system and accessories, plus lifetime unlimited scans.',
+    '.bundle-offer:nth-child(3) .bundle-items': 'Includes: 10m Ethernet cable + mouse + keyboard + barcode scanner + wall holder + unlimited scans.',
+    '.bundle-offer:nth-child(3) .bundle-old': 'Instead of EGP 60,000',
+    '#new-details .section-tag': 'Latest details',
+    '#new-details .section-title': 'Deeper control, stronger security, sharper display',
+    '#new-details .section-desc': 'Practical improvements for daily work inside pharmacies, stores, and institutions.',
+    '#cta .section-tag': 'Contact us',
+    '#cta .cta-title': 'Ready to start?<br><span style="color:var(--gold)">We are here with you.</span>',
+    '#cta .cta-desc': 'Start with a free subscription now, or contact us directly to choose the right plan for your institution.',
+    '#cta .btn-primary': '📲 Contact on WhatsApp',
+    'footer p': 'Made with ❤️ — <span>Price Scanner</span> v3.0.0 &nbsp;|&nbsp; All rights reserved &copy; 2026'
+  },
+  fr: {
+    '.nav-links a[href="#data-sources"]': 'Sources',
+    '.nav-links a[href="#features"]': 'Fonctions',
+    '.nav-links a[href="#appearance"]': 'Apparence',
+    '.nav-links a[href="#expiry"]': 'Dates',
+    '.nav-links a[href="#pricing"]': 'Tarifs',
+    '.nav-links a[href="#cta"]': 'Contact',
+    '.hero-badge': 'Version 3.0.0 — disponible maintenant',
+    '.hero-content h1': 'Le système de lecture des prix<br><span class="accent">le plus intelligent</span> pour votre activité',
+    '.hero-desc': 'Scannez. Affichez. Travaillez mieux. Un système complet qui relie votre dépôt, pharmacie ou magasin à un seul code-barres affichant prix, quantité et péremption en une seconde.',
+    '.hero-actions .btn-primary': '🚀 Commencer',
+    '.hero-actions .btn-secondary': 'Voir les fonctions',
+    '.stat-item:nth-child(1) .stat-label': 'Bases prises en charge',
+    '.stat-item:nth-child(2) .stat-label': 'Langues interface',
+    '.stat-item:nth-child(3) .stat-label': 'Devises prêtes',
+    '#data-sources .section-tag': 'Sources',
+    '#data-sources .section-title': 'Vos données depuis toute source — en un clic',
+    '#data-sources .section-desc': 'Connexion directe à votre source de données avec résultats instantanés et changement de source sans redémarrage.',
+    '#features .section-tag': 'Fonctions',
+    '#features .section-title': 'Tout le nécessaire dans un seul système',
+    '#features .section-desc': 'Fonctions pensées pour le commerce, la pharmacie, le dépôt et les institutions.',
+    '#appearance .appear-content > .section-tag': 'Personnalisation',
+    '#appearance .appear-content > h2': 'Votre écran — votre identité',
+    '#appearance .appear-content > p': 'Transformez l’écran de recherche en interface professionnelle fidèle à votre marque, avec un contrôle précis de chaque détail.',
+    '#expiry .section-tag': 'Péremption et stock',
+    '#expiry .section-title': 'Gestion précise du stock',
+    '#expiry .section-desc': 'Un système complet pour suivre les dates de péremption et calculer les quantités réelles instantanément.',
+    '#multilang .section-tag': 'Multilingue',
+    '#multilang .section-title': 'Parle votre langue et affiche votre devise',
+    '#multilang .section-desc': 'Prise en charge de trois langues et cinq devises, adaptée à votre marché local.',
+    '#partner .section-tag': 'Partenariat',
+    '#partner .section-title': 'Deux niveaux clairs pour partenariat et usage',
+    '#partner .section-desc': 'Un système de permissions pratique séparant le rôle partenaire et le rôle utilisateur.',
+    '#pricing > .container > .section-header .section-tag': 'Abonnements',
+    '#pricing > .container > .section-header .section-title': 'Une offre pour chaque besoin',
+    '#pricing > .container > .section-header .section-desc': 'Commencez gratuitement, puis choisissez le solde de scans adapté à votre charge. Activation par série ou code-barres avec historique clair.',
+    '.first-offers > .section-tag': 'Offres première fois',
+    '.bundle-offer:nth-child(1) .bundle-discount': '25% sur l’ordinateur + 16% sur l’abonnement',
+    '.bundle-offer:nth-child(1) h3': 'Pack ordinateur complet + formule Haute',
+    '.bundle-offer:nth-child(1) p': 'Ordinateur complet préparé avec le système adapté et ses accessoires, avec la formule Haute de 120K scans.',
+    '.bundle-offer:nth-child(1) .bundle-items': 'Comprend : câble Ethernet 10 m + souris + clavier + scanner code-barres + support mural + formule Haute 120K.',
+    '.bundle-offer:nth-child(1) .bundle-old': 'Au lieu de 22 000 EGP',
+    '.bundle-offer:nth-child(2) .bundle-discount': '50% sur l’ordinateur',
+    '.bundle-offer:nth-child(2) h3': 'Pack ordinateur complet + formule Avancée',
+    '.bundle-offer:nth-child(2) p': 'Ordinateur complet préparé avec le système adapté et ses accessoires, avec la formule Avancée de 250K scans.',
+    '.bundle-offer:nth-child(2) .bundle-items': 'Comprend : câble Ethernet 10 m + souris + clavier + scanner code-barres + support mural + formule Avancée 250K.',
+    '.bundle-offer:nth-child(2) .bundle-old': 'Au lieu de 30 000 EGP',
+    '.bundle-offer:nth-child(3) .bundle-discount': '100% sur l’ordinateur',
+    '.bundle-offer:nth-child(3) h3': 'Pack ordinateur complet + formule à vie',
+    '.bundle-offer:nth-child(3) p': 'Ordinateur complet préparé avec le système adapté et ses accessoires, avec scans illimités à vie.',
+    '.bundle-offer:nth-child(3) .bundle-items': 'Comprend : câble Ethernet 10 m + souris + clavier + scanner code-barres + support mural + scans illimités.',
+    '.bundle-offer:nth-child(3) .bundle-old': 'Au lieu de 60 000 EGP',
+    '#new-details .section-tag': 'Derniers détails',
+    '#new-details .section-title': 'Plus de contrôle, sécurité renforcée, affichage précis',
+    '#new-details .section-desc': 'Des améliorations pratiques pour le travail quotidien en pharmacies, magasins et institutions.',
+    '#cta .section-tag': 'Contact',
+    '#cta .cta-title': 'Prêt à commencer ?<br><span style="color:var(--gold)">Nous sommes avec vous.</span>',
+    '#cta .cta-desc': 'Commencez avec un abonnement gratuit ou contactez-nous pour choisir l’offre adaptée à votre établissement.',
+    '#cta .btn-primary': '📲 Contacter sur WhatsApp',
+    'footer p': 'Créé avec ❤️ — <span>Price Scanner</span> v3.0.0 &nbsp;|&nbsp; Tous droits réservés &copy; 2026'
+  }
+};
+
+function setNode(selector, value) {
+  const el = document.querySelector(selector);
+  if (!el) return;
+  if (value.includes('<')) el.innerHTML = value;
+  else el.textContent = value;
+}
+
+function applySiteLanguage(lang) {
+  const meta = langMeta[lang] || langMeta.ar;
+  document.documentElement.lang = lang;
+  document.documentElement.dir = meta.dir;
+  document.body.classList.toggle('is-ltr', meta.dir === 'ltr');
+  document.title = meta.title;
+  Object.entries(langText[lang] || langText.ar).forEach(([selector, value]) => setNode(selector, value));
+  document.querySelectorAll('.lang-option').forEach(btn => btn.classList.toggle('active', btn.dataset.lang === lang));
+  const toggle = document.getElementById('langToggle');
+  if (toggle) toggle.textContent = meta.label;
+  try { localStorage.setItem('priceScannerSiteLang', lang); } catch { }
+}
+
 const langFloat = document.getElementById('langFloat');
 const langToggle = document.getElementById('langToggle');
 if (langToggle && langFloat) {
   langToggle.addEventListener('click', () => langFloat.classList.toggle('open'));
   document.querySelectorAll('.lang-option').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.lang-option').forEach(x => x.classList.remove('active'));
-      btn.classList.add('active');
-      langToggle.textContent = (btn.dataset.lang || 'ar').toUpperCase();
+      applySiteLanguage(btn.dataset.lang || 'ar');
       langFloat.classList.remove('open');
     });
   });
   document.addEventListener('click', (e) => { if (!langFloat.contains(e.target)) langFloat.classList.remove('open'); });
 }
+applySiteLanguage(localStorage.getItem('priceScannerSiteLang') || 'ar');
 /* ── Scroll Reveal ── */
 const observer = new IntersectionObserver((entries) => {
   entries.forEach((entry, i) => {
@@ -2244,6 +2454,7 @@ if (input) {
 
 </body>
 </html>
+
 
 
 
