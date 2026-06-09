@@ -8,10 +8,17 @@
       "expiresAt": "2027-12-31"
     },
     {
+      /*"encryptedId": "DEVICE_2_ENCRYPTED_ID",*/
+      "serial": "5WBXNRMOT19HFL71QP5869",
+      "enabled": false,
+      "expiresAt": "2027-12-31"
+    },
+    {
       "encryptedId": "DEVICE_2_ENCRYPTED_ID",
       "serial": "SERIAL_2",
       "enabled": false,
       "expiresAt": "2027-12-31"
     }
-  ]
+  ],
+  "signature": "pssig.v1.A1nBrnFQc7lMV7TioXNw7LPKCT0slVAKkIyyUbbBgXt7eOmFVENyicnmHn7opdhkOYMFpLa39NZlNICA8dfe_OzeYcEuXnTElLjo78jfEE3xf56iTgb95x4Pkqiq_59hs7qhd0T_lozRV9lqBWlPRysVCSzxTuV9QNLhJFKD4dT2msdU5SSuI5pVJeWWvTLzwxtRD--YEh41sn1wOo8f5OSHU0BVauKteay0_cdPmrXFXRXtO-EOKvSZAB4DxshcSmp8N6KjASIXdPRDo6sH7BYBSpbQoWpHKBhtDZyvqJ8fbZwxDfXXAYAg6pQByEvNoJ7XcJB6bEEjUJ0V6Wf8gKTO6-UKvUELvuSLVepplAMvpDjxxYfUauOf0alryFwNuw7WjCoZuCffAdl1SzBJuL4Bumdic8RRq0yuwrOQ3eTDc_LDwDNfTe_9JJtpZ1H-MM_WcO7wQ8e9rw0fcN5SlTE-Zij0KZHH6teCBqGjnkMda3I4qEdrNzUlYzRIqg6P"
 }
