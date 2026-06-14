@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'self';">
+  <title>Price Scanner - تجربة تفاعلية</title>
+  <link rel="icon" type="image/png" href="PriceScanner.WPF/Resources/Icons/PriceScannerApp.png">
+  <style>
+    :root {
+      --bg: #f6f1e8;
+      --ink: #161a20;
+      --muted: #69707c;
+      --line: rgba(22, 26, 32, .12);
+      --green: #7ac70c;
+      --green2: #4a9b00;
+      --gold: #f2aa36;
+      --red: #c93d3d;
+      --panel: rgba(255,255,255,.72);
+      --shadow: 0 28px 70px rgba(32, 25, 12, .12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Tahoma", "Segoe UI", sans-serif;
+      background:
+        linear-gradient(90deg, rgba(0,0,0,.035) 1px, transparent 1px),
+        linear-gradient(rgba(0,0,0,.025) 1px, transparent 1px),
+        radial-gradient(circle at 82% 4%, rgba(122,199,12,.22), transparent 34%),
+        var(--bg);
+      background-size: 44px 44px, 44px 44px, auto, auto;
+      color: var(--ink);
+      animation: pageFadeIn .38s ease both;
+    }
+    @keyframes pageFadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    a { color: inherit; text-decoration: none; }
+    .shell { width: min(1180px, calc(100% - 34px)); margin: 0 auto; padding: 26px 0 60px; }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 900; }
+    .brand img { width: 54px; height: 54px; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(67,120,0,.22)); }
+    .back { border: 1px solid var(--line); padding: 12px 18px; border-radius: 999px; background: rgba(255,255,255,.62); color: var(--muted); }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(410px, .88fr) minmax(540px, 1.12fr);
+      gap: 22px;
+      align-items: stretch;
+      margin-bottom: 24px;
+    }
+    .intro, .panel {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      border-radius: 28px;
+      backdrop-filter: blur(20px);
+      min-width: 0;
+    }
+    .intro { padding: 34px; min-height: 260px; display: flex; flex-direction: column; justify-content: center; }
+    .tag { color: var(--green2); font-weight: 900; margin-bottom: 10px; }
+    h1 { font-size: clamp(2rem, 5vw, 4.6rem); line-height: 1.05; margin: 0 0 14px; letter-spacing: 0; }
+    p { color: var(--muted); line-height: 1.9; margin: 0; }
+    .demo-disclaimer {
+      margin-top: 16px;
+      border: 1px solid rgba(122,199,12,.26);
+      background: rgba(122,199,12,.10);
+      border-radius: 18px;
+      padding: 14px 16px;
+      color: #315d00;
+      line-height: 1.9;
+      font-weight: 800;
+    }
+    .demo-disclaimer a { color: #234700; text-decoration: underline; text-underline-offset: 4px; }
+    .panel { padding: 22px; }
+    .source-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; margin-top: 16px; }
+    .source-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+      background: rgba(255,255,255,.64);
+      cursor: pointer;
+    }
+    .source-card input { accent-color: var(--green); }
+    .file-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 14px;
+    }
+    .file-row > input[type=file] { flex: 1 1 240px; }
+    .file-row > button,
+    .file-row > .btn { flex: 0 1 auto; }
+    input[type=file] { width: 100%; max-width: 100%; min-width: 0; }
+    button, .btn {
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 18px;
+      background: linear-gradient(135deg, var(--green), var(--green2));
+      color: #102000;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 12px 28px rgba(91,153,0,.22);
+    }
+    button.secondary,
+    .btn.secondary {
+      background: rgba(22, 26, 32, .08);
+      color: var(--ink);
+      box-shadow: none;
+      border: 1px solid var(--line);
+    }
+    button.danger { background: rgba(201,61,61,.12); color: var(--red); box-shadow: none; border: 1px solid rgba(201,61,61,.28); }
+    button:disabled { opacity: .48; cursor: not-allowed; }
+    .wizard {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.78);
+      box-shadow: var(--shadow);
+      border-radius: 28px;
+      overflow: hidden;
+    }
+    .steps { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); border-bottom: 1px solid var(--line); }
+    .step-tab {
+      padding: 18px 14px;
+      text-align: center;
+      color: var(--muted);
+      font-weight: 900;
+      border-inline-start: 1px solid var(--line);
+    }
+    .step-tab:first-child { border-inline-start: 0; }
+    .step-tab.active { color: var(--ink); background: linear-gradient(180deg, rgba(122,199,12,.16), transparent); }
+    .step { display: none; padding: 24px; }
+    .step.active { display: block; animation: stepFadeIn .26s ease both; }
+    @keyframes stepFadeIn {
+      from { opacity: 0; transform: translateX(16px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .hint { font-size: .86rem; color: var(--muted); margin-top: 8px; line-height: 1.8; }
+    .mapping-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .mapping-section {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px;
+      background: rgba(255,255,255,.52);
+      min-width: 0;
+    }
+    .mapping-section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(170px, 220px);
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 12px;
+      min-width: 0;
+    }
+    .mapping-section h3 { margin: 0 0 4px; }
+    .mapping-fields {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+      gap: 12px;
+      min-width: 0;
+    }
+    label { min-width: 0; }
+    label span {
+      display: block;
+      color: var(--muted);
+      font-size: .82rem;
+      margin-bottom: 6px;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    input, select {
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.82);
+      color: var(--ink);
+      border-radius: 12px;
+      padding: 12px;
+      font: inherit;
+      outline: none;
+    }
+    input[readonly] { background: rgba(22,26,32,.055); color: var(--muted); }
+    .readonly-field {
+      position: relative;
+      overflow: hidden;
+      border-radius: 14px;
+    }
+    .readonly-field::before,
+    .fade-side::before {
+      content: "";
+      position: absolute;
+      inset-block: 27px 0;
+      inset-inline-start: 0;
+      width: 46px;
+      pointer-events: none;
+      background: linear-gradient(90deg, rgba(122,199,12,.18), transparent);
+      border-radius: 12px 0 0 12px;
+    }
+    select { cursor: pointer; }
+    .rows { display: grid; gap: 10px; margin-top: 16px; }
+    .data-row {
+      display: grid;
+      grid-template-columns: 42px repeat(var(--cols), minmax(92px,1fr)) 38px;
+      gap: 8px;
+      align-items: end;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255,255,255,.58);
+    }
+    .row-num { font-weight: 900; color: var(--green2); align-self: center; text-align: center; }
+    .row-remove { width: 38px; height: 42px; border-radius: 12px; padding: 0; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+    .limit-message {
+      align-self: center;
+      color: var(--red);
+      font-size: .82rem;
+      font-weight: 700;
+      min-height: 20px;
+    }
+    .split-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      border: 1px solid rgba(122,199,12,.28);
+      border-radius: 18px;
+      background: rgba(122,199,12,.08);
+      margin: 14px 0;
+    }
+    .preview {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .result-card, .expiry-card {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,.86), rgba(255,255,255,.58));
+      position: relative;
+      overflow: hidden;
+    }
+    .expiry-card::before {
+      content: "";
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: 0;
+      width: 72px;
+      background: linear-gradient(90deg, rgba(122,199,12,.12), transparent);
+      pointer-events: none;
+    }
+    .price { font-size: 2.2rem; font-weight: 1000; color: var(--green2); margin: 12px 0; }
+    .qty { font-size: 1.7rem; font-weight: 1000; color: var(--ink); }
+    .qty .num,
+    .ltr-value {
+      direction: ltr;
+      unicode-bidi: isolate;
+      display: inline-block;
+      min-width: 46px;
+      text-align: center;
+    }
+    .expiry-row { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+    .expiry-row:last-child { border-bottom: 0; }
+    .status { color: var(--muted); margin-top: 8px; overflow-wrap: anywhere; }
+    .hidden { display: none !important; }
+    .price-float {
+      position: fixed;
+      inset-inline-start: 22px;
+      bottom: 24px;
+      z-index: 20;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 58px;
+      height: 58px;
+      border-radius: 999px;
+      padding: 8px 16px 8px 10px;
+      color: #102000;
+      background: linear-gradient(135deg, var(--green), var(--gold));
+      box-shadow: 0 22px 50px rgba(78, 153, 0, .28);
+      font-weight: 1000;
+      overflow: hidden;
+      transition: transform .2s ease, min-width .2s ease;
+    }
+    .price-float img { width: 38px; height: 38px; object-fit: contain; }
+    .price-float span { white-space: nowrap; }
+    .price-float:hover { transform: translateY(-3px); min-width: 190px; }
+    .inline-price-bubble {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 18px;
+      padding: 14px 18px;
+      border-radius: 999px;
+      background: #111820;
+      color: white;
+      font-weight: 900;
+    }
+    .inline-price-bubble img { width: 28px; height: 28px; object-fit: contain; }
+    @media (max-width: 1040px) {
+      .hero { grid-template-columns: 1fr; }
+      .intro { min-height: 0; }
+    }
+    @media (max-width: 860px) {
+      .hero, .preview { grid-template-columns: 1fr; }
+      .mapping-section-head,
+      .mapping-fields { grid-template-columns: 1fr; }
+      .file-row > input[type=file],
+      .file-row > button,
+      .file-row > .btn { flex-basis: 100%; text-align: center; }
+      .steps { grid-template-columns: 1fr 1fr; }
+      .data-row { grid-template-columns: 38px 1fr 42px; }
+      .data-row label { grid-column: 2 / 3; }
+    }
+  </style>
+</head>
+<body>
+  <a class="price-float" href="Price Scanner — نظام قراءة الأسعار الذكي.html#pricing" target="_blank" rel="noopener">
+    <img src="PriceScanner.WPF/Resources/Icons/PriceScannerApp.png" alt="">
+    <span>خطط الأسعار</span>
+  </a>
+  <main class="shell">
+    <nav class="topbar">
+      <a class="brand" href="Price Scanner — نظام قراءة الأسعار الذكي.html">
+        <img src="PriceScanner.WPF/Resources/Icons/PriceScannerApp.png" alt="">
+        <span>Price Scanner</span>
+      </a>
+      <a class="back" href="Price Scanner — نظام قراءة الأسعار الذكي.html">العودة للموقع الرئيسي</a>
+    </nav>
+
+    <section class="hero">
+      <div class="intro">
+        <div class="tag">تجربة تفاعلية آمنة</div>
+        <h1>جرّب فكرة قراءة الأسعار قبل التركيب</h1>
+        <p>املأ بيانات بسيطة أو ارفع ملف Excel/CSV، ثم جرّب البحث بالكود أو الباركود وشاهد تجميع الكميات والصلاحيات بنفس منطق البرنامج.</p>
+        <div class="demo-disclaimer">
+          هذا الديمو لتوضيح الفكرة وتجربة منطق البحث فقط. تجربة البرنامج بكامل مميزاته متاحة عند التواصل مع المطور وطلب تفعيل مجاني.
+          <a href="https://api.whatsapp.com/send?phone=201274096624&text=%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%AA%D8%AC%D8%B1%D8%A8%D8%A9%20Price%20Scanner%20%D8%A8%D9%83%D8%A7%D9%85%D9%84%20%D9%85%D9%85%D9%8A%D8%B2%D8%A7%D8%AA%D9%87%20%D8%A8%D8%AA%D9%81%D8%B9%D9%8A%D9%84%20%D9%85%D8%AC%D8%A7%D9%86%D9%8A" target="_blank" rel="noopener">اطلب التفعيل المجاني</a>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>مصدر البيانات</h2>
+        <p>يمكنك البدء يدويًا، أو اختيار ملف محلي. الديمو يعمل داخل المتصفح ولا يرفع بياناتك إلى الإنترنت.</p>
+        <div class="source-grid">
+          <label class="source-card"><input type="radio" name="sourceMode" value="manual" checked> إدخال يدوي</label>
+          <label class="source-card"><input type="radio" name="sourceMode" value="file"> ملف Excel أو CSV</label>
+        </div>
+        <div id="filePanel" class="hidden">
+          <div class="file-row">
+            <input id="dataFile" type="file" accept=".csv,.tsv,.xlsx">
+            <button id="applyFileMap" type="button">تطبيق التعيين</button>
+            <button id="clearFileSource" class="secondary" type="button">مسح مصدر Excel</button>
+            <a class="btn secondary" href="PriceScanner.WPF/WebsiteAssets/price-scanner-demo-template.xlsx" download>تحميل قالب Excel جاهز</a>
+          </div>
+          <div id="fileStatus" class="status">اختر الملف ثم عيّن رؤوس الأعمدة المطلوبة. المطلوب: بيانات الصنف (كود الصنف، اسم الصنف، سعر الصنف، التقسيم)، الباركود (كود الصنف، الباركود)، الرصيد والصلاحية (كود الصنف، الكمية أو العبوات والأجزاء، تاريخ الصلاحية). الديمو يقرأ أول 20 صنف/باركود، وأول 30 صف رصيد وصلاحية بعد الهيدر.</div>
+          <div id="mappingGrid" class="mapping-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="wizard">
+      <div class="steps">
+        <div class="step-tab active" data-tab="0">1. بيانات الصنف</div>
+        <div class="step-tab" data-tab="1">2. الباركود</div>
+        <div class="step-tab" data-tab="2">3. الرصيد والصلاحية</div>
+        <div class="step-tab" data-tab="3">4. المعاينة</div>
+      </div>
+
+      <div class="step active" data-step="0">
+        <h2>بيانات الصنف الأساسية</h2>
+        <p class="hint">اكتب الكود واسم الصنف والسعر والتقسيم. التقسيم هو عدد الأجزاء التي تساوي عبوة كاملة، مثل 3 أجزاء = عبوة.</p>
+        <div id="itemRows" class="rows"></div>
+        <div class="actions">
+          <button type="button" data-add="items">+ إضافة صف</button>
+          <span id="itemLimitMessage" class="limit-message" aria-live="polite"></span>
+          <button class="secondary" type="button" data-next>التالي</button>
+        </div>
+      </div>
+
+      <div class="step" data-step="1">
+        <h2>ربط الباركود بالكود</h2>
+        <p class="hint">إذا كان العميل يبحث بالباركود، اربط كل باركود بكود الصنف الداخلي. يمكن ترك الباركود فارغًا لو الصنف يُبحث عنه بالكود فقط.</p>
+        <div id="barcodeRows" class="rows"></div>
+        <div class="actions">
+          <button class="secondary" type="button" data-prev>رجوع</button>
+          <button class="secondary" type="button" data-next>التالي</button>
+        </div>
+      </div>
+
+      <div class="step" data-step="2">
+        <h2>الرصيد والصلاحية</h2>
+        <div class="split-box">
+          <input id="splitToggle" type="checkbox" style="width:auto">
+          <div>
+            <strong>تفعيل الكمية المقسمة</strong>
+            <p class="hint">فعّلها إذا كان النظام يخزن العبوات والأجزاء منفصلين. عند الإيقاف سيتم التعامل مع الكمية كرقم واحد.</p>
+          </div>
+        </div>
+        <div id="stockRows" class="rows"></div>
+        <div class="actions">
+          <button type="button" data-add="stock">+ إضافة صف</button>
+          <span id="stockLimitMessage" class="limit-message" aria-live="polite"></span>
+          <button class="secondary" type="button" data-prev>رجوع</button>
+          <button class="secondary" type="button" data-next>التالي</button>
+        </div>
+      </div>
+
+      <div class="step" data-step="3">
+        <h2>معاينة البحث</h2>
+        <p class="hint">اكتب كود صنف أو باركود ثم اضغط معاينة. هذه الصفحة تعرض نتيجة الفكرة فقط، وليست اتصالًا بقاعدة بيانات حقيقية.</p>
+        <div class="file-row">
+          <input id="searchValue" type="text" placeholder="كود الصنف أو الباركود" value="1001">
+          <button id="previewBtn" type="button">معاينة</button>
+          <button id="clearPreview" class="danger" type="button">تفريغ المعاينة</button>
+        </div>
+        <div class="preview">
+          <div id="resultCard" class="result-card"></div>
+          <div id="expiryCard" class="expiry-card"></div>
+        </div>
+        <div class="actions">
+          <button class="secondary" type="button" data-prev>رجوع</button>
+        </div>
+        <a class="inline-price-bubble" href="Price Scanner — نظام قراءة الأسعار الذكي.html#pricing" target="_blank" rel="noopener">
+          <img src="PriceScanner.WPF/Resources/Icons/PriceScannerApp.png" alt="">
+          <span>انتقل لخطط الأسعار</span>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const rowLimits = { items: 20, barcodes: 20, stock: 30 };
+    const sourceLimitMessage = 'لقد وصلت للحد الأقصى لعدد الأصناف، يمكنك حذف صنف أو تعديل بيانات صنف أو استبداله.';
+    const stockLimitMessage = 'لقد وصلت للحد الأقصى لصفوف الرصيد والصلاحية في الديمو.';
+    const state = {
+      step: 0,
+      importedRows: [],
+      headers: [],
+      importedSheets: [],
+      sheetSelection: { items: '', barcodes: '', stock: '' },
+      mapSelection: {},
+      items: [
+        { code: '1001', name: 'Abimol Extra Tablets', price: '42.50', split: '3' },
+        { code: '1002', name: 'Panadol Advance 24 Tab', price: '38.00', split: '2' },
+        { code: '1003', name: 'Catafast 50 Sachets', price: '54.00', split: '5' },
+        { code: '1004', name: 'Augmentin 1g Tablets', price: '165.00', split: '2' },
+        { code: '1005', name: 'Zyrtec Drops', price: '62.00', split: '1' },
+        { code: '1006', name: 'Bioderma Sebium Gel', price: '410.00', split: '1' },
+        { code: '1007', name: 'La Roche-Posay Anthelios XL', price: '690.00', split: '1' },
+        { code: '1008', name: 'CeraVe Daily Moisturizing Lotion', price: '520.00', split: '1' },
+        { code: '1009', name: 'Vichy Mineral 89 Serum', price: '780.00', split: '1' },
+        { code: '1010', name: 'Eucerin UreaRepair Plus', price: '610.00', split: '1' },
+        { code: '1011', name: 'Pampers Premium Care Size 3', price: '285.00', split: '1' },
+        { code: '1012', name: 'Johnson Baby Shampoo', price: '85.00', split: '1' },
+        { code: '1013', name: 'Sudocrem Baby Care 125g', price: '155.00', split: '1' },
+        { code: '1014', name: 'Nestle Nan Optipro 1', price: '315.00', split: '1' },
+        { code: '1015', name: 'Chicco Feeding Bottle', price: '240.00', split: '1' },
+        { code: '1016', name: 'Voltaren Emulgel 50g', price: '74.00', split: '1' },
+        { code: '1017', name: 'Otrivin Nasal Spray', price: '48.00', split: '1' },
+        { code: '1018', name: 'Betadine Antiseptic Solution', price: '66.00', split: '1' },
+        { code: '1019', name: 'Dove Intensive Cream', price: '95.00', split: '1' },
+        { code: '1020', name: 'Mustela Gentle Cleansing Gel', price: '395.00', split: '1' }
+      ],
+      barcodes: [
+        { code: '1001', barcode: '6223000010013' },
+        { code: '1002', barcode: '6223000010020' },
+        { code: '1003', barcode: '6223000010037' },
+        { code: '1004', barcode: '6223000010044' },
+        { code: '1005', barcode: '6223000010051' },
+        { code: '1006', barcode: '6223000010068' },
+        { code: '1007', barcode: '6223000010075' },
+        { code: '1008', barcode: '6223000010082' },
+        { code: '1009', barcode: '6223000010099' },
+        { code: '1010', barcode: '6223000010105' },
+        { code: '1011', barcode: '6223000010112' },
+        { code: '1012', barcode: '6223000010129' },
+        { code: '1013', barcode: '6223000010136' },
+        { code: '1014', barcode: '6223000010143' },
+        { code: '1015', barcode: '6223000010150' },
+        { code: '1016', barcode: '6223000010167' },
+        { code: '1017', barcode: '6223000010174' },
+        { code: '1018', barcode: '6223000010181' },
+        { code: '1019', barcode: '6223000010198' },
+        { code: '1020', barcode: '6223000010204' }
+      ],
+      stock: [
+        { code: '1001', qty: '5', expiry: '2027-10-28 00:00:00.000', packs: '2', parts: '2' },
+        { code: '1001', qty: '1', expiry: '2028-12-28 00:00:00.000', packs: '0', parts: '1' },
+        { code: '1002', qty: '8', expiry: '2028-03-28', packs: '3', parts: '1' },
+        { code: '1003', qty: '4', expiry: '2027-09-01', packs: '1', parts: '4' },
+        { code: '1004', qty: '2', expiry: '2026-12-01', packs: '2', parts: '0' },
+        { code: '1005', qty: '6', expiry: '2028-06-01', packs: '6', parts: '0' },
+        { code: '1006', qty: '3', expiry: '2029-01-01', packs: '3', parts: '0' },
+        { code: '1007', qty: '2', expiry: '2028-11-01', packs: '2', parts: '0' },
+        { code: '1008', qty: '4', expiry: '2029-05-01', packs: '4', parts: '0' },
+        { code: '1009', qty: '1', expiry: '2028-08-01', packs: '1', parts: '0' },
+        { code: '1010', qty: '2', expiry: '2027-07-01', packs: '2', parts: '0' },
+        { code: '1011', qty: '7', expiry: '2028-02-01', packs: '7', parts: '0' },
+        { code: '1012', qty: '9', expiry: '2029-10-01', packs: '9', parts: '0' },
+        { code: '1013', qty: '3', expiry: '2027-04-01', packs: '3', parts: '0' },
+        { code: '1014', qty: '5', expiry: '2028-12-01', packs: '5', parts: '0' },
+        { code: '1015', qty: '4', expiry: '2029-03-01', packs: '4', parts: '0' },
+        { code: '1016', qty: '6', expiry: '2027-11-01', packs: '6', parts: '0' },
+        { code: '1017', qty: '2', expiry: '2026-10-01', packs: '2', parts: '0' },
+        { code: '1018', qty: '10', expiry: '2028-01-01', packs: '10', parts: '0' },
+        { code: '1019', qty: '4', expiry: '2028-09-01', packs: '4', parts: '0' },
+        { code: '1020', qty: '3', expiry: '2029-06-01', packs: '3', parts: '0' },
+        { code: '1001', qty: '2', expiry: '2029-02-01', packs: '1', parts: '2' },
+        { code: '1001', qty: '3', expiry: '2029-04-01', packs: '1', parts: '1' },
+        { code: '1001', qty: '1', expiry: '2028-10-01', packs: '0', parts: '3' },
+        { code: '1005', qty: '2', expiry: '2027-02-01', packs: '2', parts: '0' },
+        { code: '1005', qty: '4', expiry: '2029-08-01', packs: '4', parts: '0' },
+        { code: '1006', qty: '1', expiry: '2028-07-01', packs: '1', parts: '0' },
+        { code: '1008', qty: '2', expiry: '2027-12-01', packs: '2', parts: '0' },
+        { code: '1008', qty: '1', expiry: '2030-01-01', packs: '1', parts: '0' },
+        { code: '1008', qty: '2', expiry: '2029-09-01', packs: '2', parts: '0' }
+      ]
+    };
+    const fieldSets = {
+      items: [
+        ['code', 'كود الصنف'], ['name', 'اسم الصنف'], ['price', 'سعر الصنف'], ['split', 'التقسيم']
+      ],
+      barcodes: [
+        ['code', 'كود الصنف'], ['barcode', 'الباركود']
+      ]
+    };
+    const mapGroups = {
+      items: {
+        title: 'بيانات الصنف',
+        hint: 'اختر شيت بيانات الأصناف، ثم اربط رؤوس الأعمدة المطلوبة.',
+        fields: [['itemCode', 'كود الصنف'], ['itemName', 'اسم الصنف'], ['itemPrice', 'سعر الصنف'], ['itemSplit', 'التقسيم']]
+      },
+      barcodes: {
+        title: 'الباركود',
+        hint: 'الباركود اختياري، لكن كود الصنف مطلوب للربط مع بيانات الصنف.',
+        fields: [['barcodeCode', 'كود صنف الباركود'], ['barcodeValue', 'الباركود']]
+      },
+      stock: {
+        title: 'الرصيد والصلاحية',
+        hint: 'يمكن أن يحتوي الصنف على أكثر من تاريخ صلاحية، لذلك يقرأ هذا القسم حتى 30 صفًا.',
+        fields: [['stockCode', 'كود صنف الرصيد'], ['stockQuantity', 'الكمية'], ['stockPacks', 'العبوات'], ['stockParts', 'الأجزاء'], ['stockExpiry', 'تاريخ الصلاحية']]
+      }
+    };
+
+    function clean(value, max = 80) {
+      return String(value ?? '').replace(/[\u0000-\u001F\u007F]/g, '').trim().slice(0, max);
+    }
+    function numberValue(value) {
+      const n = Number(String(value ?? '').replace(',', '.').replace(/[^\d.-]/g, ''));
+      return Number.isFinite(n) ? n : 0;
+    }
+    function setText(el, value) { el.textContent = clean(value, 240); }
+    function stockFields() {
+      return document.getElementById('splitToggle').checked
+        ? [['code', 'كود الصنف'], ['packs', 'عبوات'], ['parts', 'أجزاء'], ['expiry', 'تاريخ الصلاحية']]
+        : [['code', 'كود الصنف'], ['qty', 'الكمية'], ['expiry', 'تاريخ الصلاحية']];
+    }
+    function syncBarcodeRowsToItems() {
+      const items = collect('items');
+      if (items.length) state.items = items;
+      const existing = new Map(state.barcodes.map(row => [clean(row.code, 80), row]));
+      state.barcodes = state.items
+        .filter(item => clean(item.code, 80))
+        .slice(0, rowLimits.barcodes)
+        .map(item => {
+          const code = clean(item.code, 80);
+          const old = existing.get(code) || {};
+          return { code, name: clean(item.name, 120), barcode: clean(old.barcode, 120) };
+        });
+      if (state.barcodes.length === 0) state.barcodes = [{}];
+    }
+
+    function renderRows(kind) {
+      if (kind === 'barcodes') syncBarcodeRowsToItems();
+      const fields = kind === 'stock'
+        ? stockFields()
+        : kind === 'barcodes'
+          ? [['code', 'كود الصنف', true], ['name', 'اسم الصنف', true], ['barcode', 'الباركود', false]]
+          : fieldSets[kind];
+      const host = document.getElementById(kind === 'items' ? 'itemRows' : kind === 'barcodes' ? 'barcodeRows' : 'stockRows');
+      host.style.setProperty('--cols', fields.length);
+      host.replaceChildren();
+      state[kind].slice(0, rowLimits[kind]).forEach((row, index) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'data-row';
+        const num = document.createElement('div');
+        num.className = 'row-num';
+        num.textContent = String(index + 1);
+        wrapper.appendChild(num);
+        fields.forEach(([key, title, readOnly]) => {
+          const label = document.createElement('label');
+          if (readOnly === true) label.classList.add('readonly-field', 'fade-side');
+          const span = document.createElement('span');
+          span.textContent = title;
+          const input = document.createElement('input');
+          input.value = clean(row[key], 120);
+          input.readOnly = readOnly === true;
+          if (key !== 'name') {
+            input.dir = 'ltr';
+            input.style.textAlign = 'center';
+          }
+          input.dataset.kind = kind;
+          input.dataset.index = String(index);
+          input.dataset.field = key;
+          input.addEventListener('input', () => { state[kind][index][key] = clean(input.value, 120); });
+          label.append(span, input);
+          wrapper.appendChild(label);
+        });
+        if (kind === 'barcodes') {
+          wrapper.appendChild(document.createElement('div'));
+        } else {
+          const remove = document.createElement('button');
+          remove.type = 'button';
+          remove.className = 'danger row-remove';
+          remove.textContent = '×';
+          remove.addEventListener('click', () => {
+            state[kind].splice(index, 1);
+            if (state[kind].length === 0) state[kind].push({});
+            updateLimitMessages(kind, '');
+            renderRows(kind);
+          });
+          wrapper.appendChild(remove);
+        }
+        host.appendChild(wrapper);
+      });
+      updateLimitMessages(kind, '');
+    }
+    function renderAll() {
+      renderRows('items');
+      renderRows('barcodes');
+      renderRows('stock');
+      clearPreview();
+    }
+    function setStep(step) {
+      state.step = Math.max(0, Math.min(3, step));
+      if (state.step === 1) renderRows('barcodes');
+      document.querySelectorAll('.step').forEach(el => el.classList.toggle('active', Number(el.dataset.step) === state.step));
+      document.querySelectorAll('.step-tab').forEach(el => el.classList.toggle('active', Number(el.dataset.tab) === state.step));
+      document.querySelector('.wizard')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    document.querySelectorAll('[data-next]').forEach(btn => btn.addEventListener('click', () => setStep(state.step + 1)));
+    document.querySelectorAll('[data-prev]').forEach(btn => btn.addEventListener('click', () => setStep(state.step - 1)));
+    document.querySelectorAll('[data-add]').forEach(btn => btn.addEventListener('click', () => {
+      const kind = btn.dataset.add;
+      const limit = rowLimits[kind] || 20;
+      if (state[kind].length >= limit) {
+        updateLimitMessages(kind, kind === 'items' ? sourceLimitMessage : stockLimitMessage);
+        return;
+      }
+      state[kind].push({});
+      updateLimitMessages(kind, '');
+      renderRows(kind);
+    }));
+    document.getElementById('splitToggle').addEventListener('change', () => renderRows('stock'));
+
+    function collect(kind) {
+      const host = document.getElementById(kind === 'items' ? 'itemRows' : kind === 'barcodes' ? 'barcodeRows' : 'stockRows');
+      const rows = [];
+      host.querySelectorAll('.data-row').forEach(rowEl => {
+        const row = {};
+        rowEl.querySelectorAll('input[data-field]').forEach(input => row[input.dataset.field] = clean(input.value, 120));
+        if (Object.values(row).some(Boolean)) rows.push(row);
+      });
+      return rows.slice(0, rowLimits[kind] || 20);
+    }
+    function formatExpiry(value) {
+      const raw = clean(value, 40);
+      const serial = Number(raw);
+      if (Number.isFinite(serial) && serial > 20000 && serial < 80000) {
+        const d = new Date(Date.UTC(1899, 11, 30) + Math.round(serial) * 86400000);
+        return `${String(d.getUTCMonth() + 1).padStart(2, '0')}/${d.getUTCFullYear()}`;
+      }
+      let match = raw.match(/(\d{4})[-\/](\d{1,2})[-\/]\d{1,2}/);
+      if (match) return `${match[2].padStart(2, '0')}/${match[1]}`;
+      match = raw.match(/(\d{1,2})[-\/](\d{4})/);
+      if (match) return `${match[1].padStart(2, '0')}/${match[2]}`;
+      const d = new Date(raw);
+      if (!Number.isNaN(d.getTime())) return `${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+      return raw || 'بدون تاريخ';
+    }
+    function clearPreview() {
+      setText(document.getElementById('resultCard'), 'نتيجة البحث ستظهر هنا.');
+      setText(document.getElementById('expiryCard'), 'تواريخ الصلاحية وكمياتها ستظهر هنا.');
+    }
+    function buildPreview() {
+      const input = clean(document.getElementById('searchValue').value, 80);
+      const result = document.getElementById('resultCard');
+      const expiry = document.getElementById('expiryCard');
+      result.replaceChildren();
+      expiry.replaceChildren();
+      const items = collect('items');
+      const barcodes = collect('barcodes');
+      const stock = collect('stock');
+      let itemCode = input;
+      const barcodeRow = input ? barcodes.find(x => x.barcode && x.barcode === input) : null;
+      if (barcodeRow) itemCode = barcodeRow.code;
+      const item = items.find(x => x.code === itemCode);
+      if (!item) {
+        const title = document.createElement('h3');
+        title.textContent = 'لا توجد نتيجة مطابقة';
+        const p = document.createElement('p');
+        p.textContent = 'تأكد من إدخال كود أو باركود موجود في الجداول.';
+        result.append(title, p);
+        return;
+      }
+      const splitEnabled = document.getElementById('splitToggle').checked;
+      const split = Math.max(1, Math.floor(numberValue(item.split) || 1));
+      const rows = stock.filter(x => x.code === itemCode);
+      let totalPacks = 0, totalParts = 0, totalQty = 0;
+      const byDate = new Map();
+      rows.forEach(row => {
+        const date = formatExpiry(row.expiry);
+        if (splitEnabled) {
+          const packs = Math.max(0, Math.floor(numberValue(row.packs)));
+          const parts = Math.max(0, Math.floor(numberValue(row.parts)));
+          if (packs === 0 && parts === 0) return;
+          totalPacks += packs;
+          totalParts += parts;
+          const current = byDate.get(date) || { packs: 0, parts: 0 };
+          current.packs += packs;
+          current.parts += parts;
+          byDate.set(date, current);
+        } else {
+          const qty = Math.max(0, numberValue(row.qty));
+          if (qty === 0) return;
+          totalQty += qty;
+          byDate.set(date, (byDate.get(date) || 0) + qty);
+        }
+      });
+      if (splitEnabled) {
+        totalPacks += Math.floor(totalParts / split);
+        totalParts = totalParts % split;
+      }
+      const title = document.createElement('h3');
+      title.textContent = clean(item.name, 120) || 'اسم الصنف';
+      const code = document.createElement('p');
+      code.textContent = `الكود: ${itemCode}`;
+      const price = document.createElement('div');
+      price.className = 'price';
+      price.textContent = `${clean(item.price, 30) || '0'} ج.م`;
+      const qty = document.createElement('div');
+      qty.className = 'qty';
+      const qtyNumber = splitEnabled ? `${totalPacks} : ${totalParts}` : `${totalQty || 0}`;
+      qty.innerHTML = `الكمية: <span class="num">${clean(qtyNumber, 40)}</span>`;
+      result.append(title, code, price, qty);
+      const exTitle = document.createElement('h3');
+      exTitle.textContent = 'الصلاحيات';
+      expiry.appendChild(exTitle);
+      if (byDate.size === 0) {
+        const empty = document.createElement('p');
+        empty.textContent = 'لا توجد صلاحيات برصيد ظاهر.';
+        expiry.appendChild(empty);
+        return;
+      }
+      Array.from(byDate.entries()).sort(([a], [b]) => a.localeCompare(b)).forEach(([date, value]) => {
+        const row = document.createElement('div');
+        row.className = 'expiry-row';
+        const dateEl = document.createElement('strong');
+        dateEl.textContent = date;
+        const qtyEl = document.createElement('span');
+        qtyEl.className = 'ltr-value';
+        if (splitEnabled) {
+          const packs = value.packs + Math.floor(value.parts / split);
+          const parts = value.parts % split;
+          qtyEl.textContent = `${packs} : ${parts}`;
+        } else {
+          qtyEl.textContent = String(value);
+        }
+        row.append(dateEl, qtyEl);
+        expiry.appendChild(row);
+      });
+    }
+    document.getElementById('previewBtn').addEventListener('click', buildPreview);
+    document.getElementById('clearPreview').addEventListener('click', clearPreview);
+
+    document.querySelectorAll('input[name="sourceMode"]').forEach(radio => {
+      radio.addEventListener('change', () => document.getElementById('filePanel').classList.toggle('hidden', radio.value !== 'file' || !radio.checked));
+    });
+    function updateLimitMessages(kind, message) {
+      const target = kind === 'items'
+        ? document.getElementById('itemLimitMessage')
+        : kind === 'stock'
+          ? document.getElementById('stockLimitMessage')
+          : null;
+      if (target) target.textContent = message || '';
+    }
+
+    function getSelectedSheet(group) {
+      const selected = state.sheetSelection[group];
+      return state.importedSheets.find(s => s.name === selected) || state.importedSheets[0] || { name: '', headers: [], data: [] };
+    }
+
+    function guessHeader(headers, key, title) {
+      const normalizedTitle = title.toLowerCase();
+      const normalizedKey = key.toLowerCase();
+      return headers.find(h => h === title)
+        || headers.find(h => h.toLowerCase() === normalizedTitle)
+        || headers.find(h => normalizedKey.includes(h.toLowerCase()) || h.toLowerCase().includes(normalizedTitle))
+        || '';
+    }
+
+    function renderMapping() {
+      const grid = document.getElementById('mappingGrid');
+      grid.replaceChildren();
+      if (!state.importedSheets.length) return;
+
+      Object.entries(mapGroups).forEach(([group, cfg]) => {
+        const section = document.createElement('div');
+        section.className = 'mapping-section';
+        const head = document.createElement('div');
+        head.className = 'mapping-section-head';
+        const text = document.createElement('div');
+        const h3 = document.createElement('h3');
+        h3.textContent = cfg.title;
+        const hint = document.createElement('p');
+        hint.className = 'hint';
+        hint.textContent = cfg.hint;
+        text.append(h3, hint);
+        const sheetLabel = document.createElement('label');
+        const sheetSpan = document.createElement('span');
+        sheetSpan.textContent = 'اختيار الشيت';
+        const sheetSelect = document.createElement('select');
+        sheetSelect.dataset.sheetGroup = group;
+        const preferred = state.sheetSelection[group] || state.importedSheets.find(s => s.name === cfg.title)?.name || state.importedSheets[0]?.name || '';
+        state.sheetSelection[group] = preferred;
+        state.importedSheets.forEach(sheet => {
+          const option = document.createElement('option');
+          option.value = sheet.name;
+          option.textContent = sheet.name;
+          option.selected = sheet.name === preferred;
+          sheetSelect.appendChild(option);
+        });
+        sheetSelect.addEventListener('change', () => {
+          state.sheetSelection[group] = sheetSelect.value;
+          cfg.fields.forEach(([key]) => delete state.mapSelection[key]);
+          renderMapping();
+        });
+        sheetLabel.append(sheetSpan, sheetSelect);
+        head.append(text, sheetLabel);
+        const fields = document.createElement('div');
+        fields.className = 'mapping-fields';
+        const sheet = getSelectedSheet(group);
+        cfg.fields.forEach(([key, title]) => {
+        const label = document.createElement('label');
+        const span = document.createElement('span');
+        span.textContent = title;
+        const select = document.createElement('select');
+        select.dataset.map = key;
+        const blank = document.createElement('option');
+        blank.value = '';
+        blank.textContent = 'غير مستخدم';
+        select.appendChild(blank);
+        const guessed = state.mapSelection[key] || guessHeader(sheet.headers, key, title);
+        sheet.headers.slice().sort((a, b) => a.localeCompare(b, 'ar')).forEach(h => {
+          const option = document.createElement('option');
+          option.value = h;
+          option.textContent = h;
+          if (h === guessed) option.selected = true;
+          select.appendChild(option);
+        });
+        select.addEventListener('change', () => { state.mapSelection[key] = select.value; });
+        label.append(span, select);
+          fields.appendChild(label);
+        });
+        section.append(head, fields);
+        grid.appendChild(section);
+      });
+    }
+    function applyFileMap() {
+      if (state.importedSheets.length === 0) return;
+      const map = {};
+      document.querySelectorAll('select[data-map]').forEach(sel => map[sel.dataset.map] = sel.value);
+      const get = (row, key) => map[key] ? clean(row[map[key]], 120) : '';
+      const itemRows = getSelectedSheet('items').data;
+      const barcodeRows = getSelectedSheet('barcodes').data;
+      const stockRows = getSelectedSheet('stock').data;
+      state.items = itemRows.map(r => ({ code: get(r, 'itemCode'), name: get(r, 'itemName'), price: get(r, 'itemPrice'), split: get(r, 'itemSplit') })).filter(r => r.code).slice(0, rowLimits.items);
+      state.barcodes = barcodeRows.map(r => ({ code: get(r, 'barcodeCode'), barcode: get(r, 'barcodeValue') })).filter(r => r.code).slice(0, rowLimits.barcodes);
+      state.stock = stockRows.map(r => ({
+        code: get(r, 'stockCode'),
+        qty: get(r, 'stockQuantity'),
+        packs: get(r, 'stockPacks'),
+        parts: get(r, 'stockParts'),
+        expiry: get(r, 'stockExpiry')
+      })).filter(r => r.code).slice(0, rowLimits.stock);
+      if (state.items.length === 0) state.items = [{}];
+      if (state.barcodes.length === 0) state.barcodes = [{}];
+      if (state.stock.length === 0) state.stock = [{}];
+      renderAll();
+      document.getElementById('fileStatus').textContent = 'تم تطبيق التعيين على الديمو.';
+    }
+    document.getElementById('applyFileMap').addEventListener('click', applyFileMap);
+    document.getElementById('clearFileSource').addEventListener('click', () => {
+      document.getElementById('dataFile').value = '';
+      state.importedRows = [];
+      state.headers = [];
+      state.importedSheets = [];
+      state.sheetSelection = { items: '', barcodes: '', stock: '' };
+      state.mapSelection = {};
+      document.getElementById('mappingGrid').replaceChildren();
+      document.getElementById('fileStatus').textContent = 'تم مسح مصدر Excel. يمكنك اختيار ملف جديد أو الاستمرار بالإدخال اليدوي.';
+    });
+
+    function parseDelimited(text) {
+      const rows = [];
+      let row = [], value = '', quoted = false;
+      const delimiter = text.includes('\t') ? '\t' : ',';
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        if (ch === '"' && text[i + 1] === '"') { value += '"'; i++; continue; }
+        if (ch === '"') { quoted = !quoted; continue; }
+        if (!quoted && ch === delimiter) { row.push(value); value = ''; continue; }
+        if (!quoted && (ch === '\n' || ch === '\r')) {
+          if (ch === '\r' && text[i + 1] === '\n') i++;
+          row.push(value); rows.push(row); row = []; value = ''; continue;
+        }
+        value += ch;
+      }
+      if (value || row.length) { row.push(value); rows.push(row); }
+      const headers = (rows.shift() || []).map(h => clean(h, 80)).filter(Boolean);
+      const data = rows.map(r => Object.fromEntries(headers.map((h, i) => [h, clean(r[i], 160)]))).filter(r => Object.values(r).some(Boolean));
+      return { headers, data, sheets: [{ name: 'Sheet 1', headers, data }] };
+    }
+    async function inflateRaw(bytes) {
+      if (!('DecompressionStream' in window)) throw new Error('المتصفح لا يدعم قراءة XLSX محليًا. استخدم CSV.');
+      const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+      return new Uint8Array(await new Response(stream).arrayBuffer());
+    }
+    async function parseXlsx(file) {
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      const dv = new DataView(bytes.buffer);
+      let eocd = -1;
+      for (let i = bytes.length - 22; i >= 0; i--) { if (dv.getUint32(i, true) === 0x06054b50) { eocd = i; break; } }
+      if (eocd < 0) throw new Error('ملف XLSX غير صالح.');
+      const count = dv.getUint16(eocd + 10, true);
+      let ptr = dv.getUint32(eocd + 16, true);
+      const entries = new Map();
+      for (let i = 0; i < count; i++) {
+        if (dv.getUint32(ptr, true) !== 0x02014b50) break;
+        const method = dv.getUint16(ptr + 10, true);
+        const compressed = dv.getUint32(ptr + 20, true);
+        const nameLen = dv.getUint16(ptr + 28, true);
+        const extraLen = dv.getUint16(ptr + 30, true);
+        const commentLen = dv.getUint16(ptr + 32, true);
+        const localOffset = dv.getUint32(ptr + 42, true);
+        const name = new TextDecoder().decode(bytes.slice(ptr + 46, ptr + 46 + nameLen));
+        entries.set(name, { method, compressed, localOffset });
+        ptr += 46 + nameLen + extraLen + commentLen;
+      }
+      async function entryText(name) {
+        const e = entries.get(name);
+        if (!e) return '';
+        const p = e.localOffset;
+        const nameLen = dv.getUint16(p + 26, true);
+        const extraLen = dv.getUint16(p + 28, true);
+        const start = p + 30 + nameLen + extraLen;
+        const data = bytes.slice(start, start + e.compressed);
+        const out = e.method === 0 ? data : await inflateRaw(data);
+        return new TextDecoder().decode(out);
+      }
+      const parser = new DOMParser();
+      const sharedXml = await entryText('xl/sharedStrings.xml');
+      const shared = sharedXml ? Array.from(parser.parseFromString(sharedXml, 'application/xml').querySelectorAll('si')).map(si => clean(si.textContent, 200)) : [];
+      const workbookXml = await entryText('xl/workbook.xml');
+      const workbookDoc = workbookXml ? parser.parseFromString(workbookXml, 'application/xml') : null;
+      const workbookNames = workbookDoc
+        ? Array.from(workbookDoc.querySelectorAll('sheet')).map((sheet, index) => clean(sheet.getAttribute('name') || `Sheet ${index + 1}`, 80))
+        : [];
+      const sheetNames = Array.from(entries.keys())
+        .filter(x => /^xl\/worksheets\/sheet\d+\.xml$/.test(x))
+        .sort((a, b) => Number(a.match(/sheet(\d+)/)?.[1] || 0) - Number(b.match(/sheet(\d+)/)?.[1] || 0));
+
+      async function parseSheet(sheetPath, index) {
+        const sheetXml = await entryText(sheetPath);
+        const doc = parser.parseFromString(sheetXml, 'application/xml');
+        const matrix = [];
+        doc.querySelectorAll('sheetData row').forEach(row => {
+        const arr = [];
+        row.querySelectorAll('c').forEach(c => {
+          const ref = c.getAttribute('r') || 'A1';
+          const letters = ref.replace(/\d/g, '');
+          let col = 0;
+          for (const ch of letters) col = col * 26 + ch.charCodeAt(0) - 64;
+          const v = c.querySelector('v');
+          const t = c.getAttribute('t');
+          let val = t === 'inlineStr' ? c.textContent : (v ? v.textContent : '');
+          if (t === 's') val = shared[Number(val)] || '';
+          arr[col - 1] = clean(val, 200);
+        });
+        matrix.push(arr);
+      });
+        const headers = (matrix.shift() || []).map(h => clean(h, 80)).filter(Boolean);
+        const data = matrix.map(r => Object.fromEntries(headers.map((h, i) => [h, clean(r[i], 160)]))).filter(r => Object.values(r).some(Boolean));
+        return { name: workbookNames[index] || `Sheet ${index + 1}`, headers, data };
+      }
+
+      const sheets = [];
+      for (let i = 0; i < sheetNames.length; i++) {
+        const sheet = await parseSheet(sheetNames[i], i);
+        if (sheet.headers.length) sheets.push(sheet);
+      }
+      const first = sheets[0] || { headers: [], data: [] };
+      return { headers: first.headers, data: first.data, sheets };
+    }
+    document.getElementById('dataFile').addEventListener('change', async (event) => {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const status = document.getElementById('fileStatus');
+      status.textContent = 'جار قراءة الملف...';
+      try {
+        const parsed = file.name.toLowerCase().endsWith('.xlsx') ? await parseXlsx(file) : parseDelimited(await file.text());
+        state.importedSheets = (parsed.sheets && parsed.sheets.length ? parsed.sheets : [{ name: 'Sheet 1', headers: parsed.headers, data: parsed.data }])
+          .map(sheet => ({ ...sheet, data: sheet.data.slice(0, rowLimits.stock) }));
+        state.headers = state.importedSheets[0]?.headers || [];
+        state.importedRows = state.importedSheets[0]?.data || [];
+        state.sheetSelection = { items: '', barcodes: '', stock: '' };
+        state.mapSelection = {};
+        renderMapping();
+        status.textContent = `تمت قراءة ${state.importedSheets.length} شيت. تنبيه: يجب أن تكون بيانات الأصناف والباركود داخل أول 20 صف بعد الهيدر، والرصيد والصلاحية داخل أول 30 صف حتى تظهر في هذا الديمو.`;
+      } catch (err) {
+        status.textContent = clean(err.message || 'تعذر قراءة الملف.', 180);
+      }
+    });
+    renderAll();
+    clearPreview();
+  </script>
+</body>
+</html>

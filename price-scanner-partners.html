@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data:; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'none'; object-src 'none'; base-uri 'self';">
+  <title>Price Scanner - المتعاونين والشركات</title>
+  <link rel="icon" type="image/png" href="PriceScanner.WPF/Resources/Icons/PriceScannerApp.png">
+  <style>
+    :root {
+      --bg: #f7f2ea;
+      --ink: #171a20;
+      --muted: #68717d;
+      --line: rgba(23,26,32,.12);
+      --green: #76c900;
+      --gold: #f2aa36;
+      --panel: rgba(255,255,255,.72);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Tahoma", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(0,0,0,.035) 1px, transparent 1px),
+        linear-gradient(rgba(0,0,0,.025) 1px, transparent 1px),
+        radial-gradient(circle at 10% 10%, rgba(118,201,0,.22), transparent 34%),
+        var(--bg);
+      background-size: 44px 44px, 44px 44px, auto, auto;
+    }
+    a { color: inherit; text-decoration: none; }
+    .shell { width: min(1120px, calc(100% - 34px)); margin: auto; padding: 28px 0 70px; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 38px; }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 1000; }
+    .brand img { width: 54px; height: 54px; object-fit: contain; }
+    .back { border: 1px solid var(--line); background: rgba(255,255,255,.62); padding: 12px 18px; border-radius: 999px; color: var(--muted); }
+    .hero {
+      border: 1px solid var(--line);
+      border-radius: 34px;
+      padding: clamp(28px, 7vw, 70px);
+      background: var(--panel);
+      box-shadow: 0 30px 90px rgba(29, 22, 13, .12);
+      margin-bottom: 24px;
+    }
+    .tag { color: #4f9900; font-weight: 1000; margin-bottom: 10px; }
+    h1 { margin: 0 0 16px; font-size: clamp(2.2rem, 6vw, 5rem); line-height: 1.05; letter-spacing: 0; }
+    h2 { margin: 0 0 10px; font-size: clamp(1.5rem, 3vw, 2.4rem); letter-spacing: 0; }
+    p { color: var(--muted); line-height: 1.9; margin: 0; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 18px; margin-top: 24px; }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(255,255,255,.66);
+      padding: 24px;
+      min-height: 230px;
+      box-shadow: 0 18px 50px rgba(29, 22, 13, .08);
+    }
+    .num { color: var(--gold); font-size: 2.5rem; font-weight: 1000; margin-bottom: 12px; }
+    .flow { display: grid; gap: 12px; margin-top: 18px; }
+    .flow-item { border: 1px solid var(--line); border-radius: 18px; padding: 16px; background: rgba(255,255,255,.58); }
+    .cta {
+      margin-top: 24px;
+      padding: 28px;
+      border-radius: 26px;
+      background: #111820;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .cta p { color: rgba(255,255,255,.68); }
+    .btn { background: linear-gradient(135deg, var(--green), #4f9900); padding: 14px 22px; border-radius: 16px; color: #102000; font-weight: 1000; }
+    .cta-actions { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .btn.whatsapp { background: #f8fff0; color: #174000; border: 1px solid rgba(118,201,0,.45); }
+    @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <nav class="topbar">
+      <a class="brand" href="Price Scanner — نظام قراءة الأسعار الذكي.html">
+        <img src="PriceScanner.WPF/Resources/Icons/PriceScannerApp.png" alt="">
+        <span>Price Scanner</span>
+      </a>
+      <a class="back" href="Price Scanner — نظام قراءة الأسعار الذكي.html">العودة للموقع الرئيسي</a>
+    </nav>
+
+    <section class="hero">
+      <div class="tag">للمتعاونين والشركات الخاصة</div>
+      <h1>نظام توافق قابل للتجهيز بدون كشف أسرار التكامل</h1>
+      <p>يمكن تجهيز توافق كامل لنظام الشركة، تصديره بصيغة مقفولة، ثم تركيبه عند العميل مع التحكم في صلاحيات الربط والتوافق والقراءة.</p>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <div class="num">01</div>
+        <h2>تجهيز التوافق</h2>
+        <p>تحديد الجداول والأعمدة والصور والكميات والصلاحيات وقواعد التنظيف بدون تثبيت خرائط جاهزة لا تناسب كل الأنظمة.</p>
+      </article>
+      <article class="card">
+        <div class="num">02</div>
+        <h2>تصدير مقفول</h2>
+        <p>إخراج ملف إعدادات مخصص بصيغة محمية للعميل أو المتعاون، مع إمكانية تحديث التوافق لاحقًا بدون إعادة بناء يدوي.</p>
+      </article>
+      <article class="card">
+        <div class="num">03</div>
+        <h2>تشغيل مضبوط</h2>
+        <p>فصل الصلاحيات بين المطور والمتعاون والعميل، مع إمكانية إخفاء تبويبات الربط والتوافق لمنع العبث بعد التسليم.</p>
+      </article>
+    </section>
+
+    <section class="hero" style="margin-top:24px;">
+      <div class="tag">آلية العمل</div>
+      <h2>من اتفاق الشركة إلى تشغيل العميل</h2>
+      <div class="flow">
+        <div class="flow-item"><strong>1. اتفاق تقني:</strong> تحديد ما سيقرأه البرنامج فقط من قاعدة البيانات أو ملفات Excel.</div>
+        <div class="flow-item"><strong>2. إعداد داخلي:</strong> تجهيز التوافق داخل تبويب المطور وتجربة البحث والصلاحيات والكميات قبل التسليم.</div>
+        <div class="flow-item"><strong>3. ملف تسليم:</strong> تصدير إعدادات مقفولة وتركيبها عند العميل دون كشف كلمة المرور أو تفاصيل الربط الحساسة.</div>
+        <div class="flow-item"><strong>4. تشغيل ومتابعة:</strong> اختبار سرعة الاتصال والاستجابة، ثم دعم تحديثات التوافق عند تغيير نظام الشركة.</div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div>
+        <h2>تريد توافقًا مخصصًا؟</h2>
+        <p>ابدأ بتجربة الديمو أو تواصل لاختيار نموذج الشراكة المناسب.</p>
+      </div>
+      <div class="cta-actions">
+        <a class="btn" href="price-scanner-demo.html">جرب الديمو التفاعلي</a>
+        <a class="btn whatsapp" href="https://api.whatsapp.com/send?phone=201274096624&text=%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%AA%D9%88%D8%A7%D9%81%D9%82%20%D9%85%D8%AE%D8%B5%D8%B5%20%D9%84%D9%86%D8%B8%D8%A7%D9%85%20Price%20Scanner" target="_blank" rel="noopener">تواصل واتساب</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
