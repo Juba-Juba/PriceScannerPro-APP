@@ -19,5 +19,28 @@
       "expiresAt": "2027-12-31"
     }
   ],
-  "signature": "pssig.v1.Ob0aEQAb7ZSLim36nWwRCcyeSUTTNN28aixGoC7gVDFjTJdM_TBNzGxv7RRYylw4GOqmil4aKxMBYTAgTBN1rmI_s80uuyp3SwarV8aSIkmNnNTCGCHhsYi7K0OQj4HtLEq3zaXIYUmU6Nu8tZatAgGZnPcHiXjpu8OPQyElpvpIsTliqq7YPOL9bTCAQpfAGKwvSqaR40U2Wx10nir4IYg07EpU0q7-eOuBQmAWDXh7Jw2XSpzrBP3OcjxOj4ST8o3qsMWw03NcfVVQCVMlH-ySiIWI9ZrbXgPfZgNDK4BVEVByqVVcUy_KdB99SXJjM8xfJ41K5e3eAQHrBSEbKa15e5RN-UTNkT60O0rXqh6R8lhPTrH3DLCfYjRVBKhUsa9aNZtnyoLgU4hAxLJ5Mlav9K2mUQJPpl-MtVSVEAQqdkt8_RkMj6UkUSH0d9U9p0ZIvKdTP_Yu7hIidNhWrqolHKc94iAd9tLlt_ymWC76bx-LmpcKZrea1WHIhu7q"
+  "signature": "{
+  "developerPasswordEncrypted": "psenc.v1.MPYQPTA7zqhlATKE.FFNRTmEX38INILFt0GRTzIzUvdYa",
+  "subscriptions": [
+    {
+      "encryptedId": "JUBA_SdlIkKze3YdUmR9v1sf5uA==",
+      "serial": "17BXNTMOT19EG8OCQP59CD",
+      "enabled": true,
+      "expiresAt": "2027-12-31"
+    },
+    {
+      "serial": "AAUXNSMOT19HFJVEQP501E",
+      "enabled": true,
+      "expiresAt": "2027-12-31"
+    },
+    {
+      "encryptedId": "DEVICE_2_ENCRYPTED_ID",
+      "serial": "SERIAL_2",
+      "enabled": false,
+      "expiresAt": "2027-12-31"
+    }
+  ],
+  "signature": "psenc.v1.KdRA/5bHsr8tETw5.qT0CUNEUYryET/fXoakN9tz8ZHlpPjlcTq9jydLLb9k6CKUrx7+zJuOt7b8PseyHVOs6g8oR9XS7DbtVkKqc92Gq+a5YYDrmu5hHaIPGCYPdEs6GaiPYiBlYFxkFQJT9cLM7mFJCyArerq4vvUWr/3qIWck8IltknRFekNLcvUtIAHcOOyHlB0W1i6F81Q136m/bf4NlwTp3mDX4lyfhLf2mTQRhlwX679c+I6NmakG7Tu02O/pTqSF0BRh44FSTuWVjFZeZLNFb50aSGD7fj/9pqJMV6J/FEroRsQmLIXvgE8WD4SDC+lG5TfHgPleT9LLo45DYzFPN+dTZENHxLb8hm7mrGO/QMimnlI/p7qAqhXbLxReU5lQpYAoQYRqwpnPSsSzlfzBEs6hdiqk2bxDStKqFmeHp7BA8kuE51mO7RtKsAkw3UUOSkTr0y+ceUVeUfJrFg2xBott3IU/6wMGsxLm9x+misiSNHp1foiShu2WO2+UC3wVTdZeEo8iQji53rQuuOgLkXt1/bS4U0302WZK4L9JT7LpoVaieh+AYREDaNYXFePr3/14BNuS97RDwAGe9RjKAlWCqcHJcmCkFAkvLq2H1VACqdRqu/Geq1wRXP176wGRxSEFvF4eUaVnvq3Cw2OgKrGVkhyZ/pH7Uk2uiee/V6fW9lrvRZafHt2zooyZBrgjyl1ffY//zGULLo/6CnDYRefNlgYFZ83/5uwUXhWI="
+}
+"
 }
